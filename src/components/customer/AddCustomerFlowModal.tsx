@@ -269,6 +269,7 @@ export const AddCustomerFlowModal: React.FC<AddCustomerFlowModalProps> = ({
                   type="text"
                   required
                   autoFocus
+                  maxLength={60}
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="e.g. Millie Chen"
@@ -284,6 +285,7 @@ export const AddCustomerFlowModal: React.FC<AddCustomerFlowModalProps> = ({
                   <Phone className="w-4 h-4 text-slate-400 absolute left-3.5" />
                   <input
                     type="tel"
+                    maxLength={25}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="+63 917 000 0000"
@@ -298,6 +300,7 @@ export const AddCustomerFlowModal: React.FC<AddCustomerFlowModalProps> = ({
                 </label>
                 <input
                   type="text"
+                  maxLength={250}
                   value={customerNotes}
                   onChange={(e) => setCustomerNotes(e.target.value)}
                   placeholder="e.g. Medium Almond, sensitive cuticles"

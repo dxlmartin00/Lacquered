@@ -31,7 +31,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
     e.preventDefault();
     if (!name.trim()) return;
 
-    const parsedPrice = parseFloat(price) || 0;
+    const parsedPrice = Math.max(0, Math.min(100000, Math.round(parseFloat(price) || 0)));
     const catLabel = CATEGORIES.find((c) => c.key === category)?.label || 'Services';
 
     playTactileTick();
@@ -39,7 +39,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
       id: `srv-custom-${Date.now()}`,
       category,
       categoryLabel: catLabel,
-      name: name.trim(),
+      name: name.trim().slice(0, 60),
       price: parsedPrice,
       perNail: category === 'add_on' ? perNail : false,
     });
@@ -101,6 +101,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             <input
               type="text"
               required
+              maxLength={60}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Russian Manicure"

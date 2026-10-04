@@ -8,16 +8,22 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.svg', 'logo.svg', 'favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Lacquered - Nail Studio OS',
-        short_name: 'Lacquered',
+        name: 'Laquered — Nail Studio OS',
+        short_name: 'Laquered',
         description: 'Offline-First Nail Studio OS for Independent Artists & Private Studios',
-        theme_color: '#0c0a09',
-        background_color: '#0c0a09',
+        theme_color: '#fff5f7',
+        background_color: '#fff5f7',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
+          {
+            src: 'logo.svg',
+            sizes: '120x120',
+            type: 'image/svg+xml',
+            purpose: 'any',
+          },
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',

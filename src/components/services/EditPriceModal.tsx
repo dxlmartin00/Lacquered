@@ -30,8 +30,9 @@ export const EditPriceModal: React.FC<EditPriceModalProps> = ({
     e.preventDefault();
     const parsed = parseFloat(priceInput);
     if (!isNaN(parsed) && parsed >= 0) {
+      const clamped = Math.max(0, Math.min(100000, Math.round(parsed)));
       playTactileTick();
-      onSavePrice(service.id, parsed);
+      onSavePrice(service.id, clamped);
       onClose();
     }
   };

@@ -1,5 +1,6 @@
 import { db } from './schema';
-import type { ClientRecord, AppointmentRecord, ServiceLogRecord, ServiceItem } from '../types';
+import type { ServiceItem } from '../types';
+
 
 export const INITIAL_SERVICES: ServiceItem[] = [
   // SOFT GEL SERVICES
@@ -183,119 +184,25 @@ export const INITIAL_SERVICES: ServiceItem[] = [
   },
 ];
 
-export const INITIAL_CLIENTS: ClientRecord[] = [
-  {
-    id: 'client-millie-1',
-    name: 'Millie Chen',
-    phone: '+63 917 892 4431',
-    instagram: '@millie.glow',
-    allergies: {
-      hema: false,
-      acrylates: false,
-      acetone: false,
-    },
-    sizing: {
-      system: 'Gel-X',
-      leftHand: { thumb: 0, index: 4, middle: 3, ring: 4, pinky: 7 },
-      rightHand: { thumb: 0, index: 4, middle: 3, ring: 4, pinky: 7 },
-    },
-    preferredShape: 'Almond',
-    preferredLength: 'Medium',
-    notes: 'Loves soft pink almond sets with chrome finish.',
-    createdAt: Date.now() - 86400000 * 5,
-  },
-  {
-    id: 'client-sophia-2',
-    name: 'Sophia Nicole',
-    phone: '+63 920 551 8832',
-    instagram: '@sophiancl',
-    allergies: {
-      hema: true,
-      acrylates: false,
-      acetone: false,
-      notes: 'Sensitive cuticles, use gentle prep.',
-    },
-    sizing: {
-      system: 'Gel-X',
-      leftHand: { thumb: 1, index: 5, middle: 4, ring: 5, pinky: 8 },
-      rightHand: { thumb: 1, index: 5, middle: 4, ring: 5, pinky: 8 },
-    },
-    preferredShape: 'Square',
-    preferredLength: 'Short',
-    notes: 'Prefers 3D flower charms on ring fingers.',
-    createdAt: Date.now() - 86400000 * 2,
-  },
-];
-
-export function getInitialAppointments(): AppointmentRecord[] {
-  const now = Date.now();
-  return [
-    {
-      id: 'apt-millie-active',
-      clientId: 'client-millie-1',
-      clientName: 'Millie Chen',
-      clientPhone: '+63 917 892 4431',
-      scheduledTime: now - 1000 * 60 * 15,
-      status: 'in_chair',
-      baseService: 'Softgel Extension (Plain)',
-      artTier: 2,
-      quotedPrice: 850,
-      depositPaid: 0,
-      selectedServices: [
-        { serviceId: 'srv-soft-2', name: 'Softgel Extension (Plain)', price: 600, quantity: 1 },
-        { serviceId: 'srv-addon-5', name: 'Chrome', price: 20, quantity: 10, perNail: true },
-        { serviceId: 'srv-addon-12', name: 'Nail Charms', price: 25, quantity: 2, perNail: true },
-      ],
-      totalPrice: 850,
-      durationMinutes: 75,
-      notes: 'Pink chrome glazed almond set with 2 bows',
-      createdAt: now - 1000 * 60 * 20,
-    },
-  ];
-}
-
-export const INITIAL_SERVICE_LOGS: ServiceLogRecord[] = [
-  {
-    id: 'log-prev-1',
-    appointmentId: 'apt-prev-001',
-    clientId: 'client-sophia-2',
-    clientName: 'Sophia Nicole',
-    timestamp: Date.now() - 86400000 * 3,
-    baseService: 'Hard Gel Extensions (Plain) - Short',
-    formula: {
-      baseBrand: 'Laquered Studio',
-      shadeCodes: ['Milky Pink #04', 'Cloud White #01'],
-      topCoat: 'Glossy',
-      details: 'Gentle cuticle care, dual cure LED 60s',
-    },
-    selectedServices: [
-      { serviceId: 'srv-hard-2', name: 'Hard Gel Extensions (Plain) - Short', price: 900, quantity: 1 },
-      { serviceId: 'srv-addon-1', name: 'French Tip', price: 25, quantity: 10, perNail: true },
-      { serviceId: 'srv-addon-10', name: '3D Flowers', price: 50, quantity: 2, perNail: true },
-    ],
-    finalBilled: 1250,
-    tip: 150,
-    notes: 'Full short square set, pastel French tips + 3D blooms',
-  },
-];
-
 export async function seedDatabaseIfEmpty(): Promise<boolean> {
   try {
+    // 1. Seed official 23-service catalog if not already populated
     const serviceCount = await db.services.count();
     if (serviceCount === 0) {
       await db.services.bulkAdd(INITIAL_SERVICES);
     }
 
-    const clientCount = await db.clients.count();
-    if (clientCount === 0) {
-      await db.clients.bulkAdd(INITIAL_CLIENTS);
-      await db.appointments.bulkAdd(getInitialAppointments());
-      await db.serviceLogs.bulkAdd(INITIAL_SERVICE_LOGS);
-      return true;
-    }
-    return false;
+    // 2. Production cleanup: remove any dev sample data left in browser IndexedDB
+    await Promise.all([
+      db.clients.where('id').anyOf(['client-millie-1', 'client-sophia-2']).delete().catch(() => {}),
+      db.appointments.where('id').anyOf(['apt-millie-active', 'apt-prev-001']).delete().catch(() => {}),
+      db.serviceLogs.where('id').anyOf(['log-prev-1']).delete().catch(() => {}),
+    ]);
+
+    return true;
   } catch (err) {
-    console.error('Failed to seed database:', err);
+    console.error('Failed to initialize database catalog:', err);
     return false;
   }
 }
+

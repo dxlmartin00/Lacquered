@@ -28,3 +28,14 @@ Key architecture and product choices made, with the context so they stay made:
 - **Context:** User requested app name change to "Laquered" and strict ban on emojis.
 - **Decision:** Standardized name to "Laquered" across metadata, headers, and UI. Replaced all emoji badges with unified `lucide-react` icons (e.g. `Sparkles` for logo/styling, `Armchair` for chair sessions, `Clock` for timers, `CheckCircle2` for completions).
 - **Date:** October 2026
+
+## 6. Production Readiness, Sample Data Purge & Local Data Sovereignty
+- **Context:** Transitioning from prototype/development phase with mock clients to real-world production deployment.
+- **Decision:**
+  - Removed all mock clients, appointments, and test logs. Preserved the 23-item studio service catalog (in PHP ₱) so users launch with a functional catalog.
+  - Implemented automatic migration cleanup in `seedDatabaseIfEmpty` to purge development sample IDs from existing client databases.
+  - Implemented client-side security hardening: Content Security Policy (CSP), Referrer-Policy, input length sanitization (`maxLength`), and numerical price clamping to prevent corrupted state.
+  - Added React `ErrorBoundary` with graceful crash recovery so users never hit an unrecoverable blank screen.
+  - Added offline-first Studio Data Backup & Restore (`.json` export/import) and safe factory reset to ensure technicians retain complete sovereignty over their salon records.
+- **Date:** October 2026
+

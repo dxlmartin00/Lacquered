@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, WifiOff, Sun, SunMedium } from 'lucide-react';
+import { Bell, WifiOff, Sun, SunMedium, ShieldCheck } from 'lucide-react';
 import { LaqueredLogo } from '../common/LaqueredLogo';
+import { BackupRestoreModal } from '../common/BackupRestoreModal';
 import { useWakeLock } from '../../hooks/useWakeLock';
 import { playTactileTick } from '../../utils/audio';
 
@@ -11,6 +12,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
   const { isSupported: wakeLockSupported, isActive: isWakeLockActive, toggle: toggleWakeLock } = useWakeLock();
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [isBackupOpen, setIsBackupOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -76,6 +78,20 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
             </button>
           )}
 
+          {/* Studio Backup & Security Settings */}
+          <button
+            onClick={() => {
+              playTactileTick();
+              setIsBackupOpen(true);
+            }}
+            type="button"
+            className="p-2 rounded-xl bg-white border border-pink-100 text-slate-500 hover:text-pink-600 hover:bg-pink-50 transition-colors tactile-btn"
+            title="Studio Data Backup & Restore"
+            aria-label="Studio Data Backup & Restore"
+          >
+            <ShieldCheck className="w-4 h-4" />
+          </button>
+
           <button
             onClick={() => {
               playTactileTick();
@@ -90,6 +106,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
           </button>
         </div>
       </div>
+
+      {/* Backup & Restore Data Modal */}
+      <BackupRestoreModal
+        isOpen={isBackupOpen}
+        onClose={() => setIsBackupOpen(false)}
+      />
     </header>
   );
 };
