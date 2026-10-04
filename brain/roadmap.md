@@ -21,7 +21,10 @@ file, so keep it in this format.
 
 ## Done
 
+- Customer profile management (Edit Customer modal & Delete Customer confirmation) · priority: high · area: clients
+- Customer card visual hierarchy cleanup (non-wrapping phone numbers, badges, notes block) · priority: high · area: design
 - Production readiness & sample data purge · priority: high · area: data
+
 - Client-side security hardening (CSP, Referrer-Policy, Input Sanitization & Clamping) · priority: high · area: security
 - React ErrorBoundary crash shield · priority: high · area: stability
 - Studio data backup & restore (.json export/import) with factory reset · priority: high · area: sovereignty

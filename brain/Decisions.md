@@ -39,3 +39,13 @@ Key architecture and product choices made, with the context so they stay made:
   - Added offline-first Studio Data Backup & Restore (`.json` export/import) and safe factory reset to ensure technicians retain complete sovereignty over their salon records.
 - **Date:** October 2026
 
+## 7. Customer Management (Edit/Delete) & Card Visual Layout Cleanup
+- **Context:** User requested ability to edit and delete customers, and fix the awkward vertical 4-line wrapping of phone numbers and cramped information in customer cards.
+- **Decision:**
+  - Re-architected Customer Cards with clean visual hierarchy: name with HEMA Free badge, non-wrapping phone and Instagram badges with icons, subtle quote block for client notes, and dedicated quick-action controls.
+  - Added `EditCustomerModal` to update name, phone, Instagram handle, preferred nail shape & length, HEMA sensitivity flag, and studio notes directly in IndexedDB.
+  - Added `DeleteCustomerModal` with confirmation dialog and cascade cleanup of orphaned appointments.
+  - Purged historical dev prototype IDs (`client-maya-lin`, `client-elena-rostova`, `client-chloe-vance`) from local Dexie database migration routine.
+- **Date:** October 2026
+
+

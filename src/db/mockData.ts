@@ -192,12 +192,34 @@ export async function seedDatabaseIfEmpty(): Promise<boolean> {
       await db.services.bulkAdd(INITIAL_SERVICES);
     }
 
-    // 2. Production cleanup: remove any dev sample data left in browser IndexedDB
+    // 2. Production cleanup: remove all dev/prototype sample clients and appointments left in browser IndexedDB
+    const devClientIds = [
+      'client-millie-1',
+      'client-sophia-2',
+      'client-maya-lin',
+      'client-elena-rostova',
+      'client-chloe-vance',
+    ];
+    const devAptIds = [
+      'apt-millie-active',
+      'apt-prev-001',
+      'apt-maya-active',
+      'apt-elena-scheduled',
+      'apt-chloe-scheduled',
+      'apt-prev-002',
+    ];
+    const devLogIds = [
+      'log-prev-1',
+      'log-prev-maya-1',
+      'log-prev-elena-1',
+    ];
+
     await Promise.all([
-      db.clients.where('id').anyOf(['client-millie-1', 'client-sophia-2']).delete().catch(() => {}),
-      db.appointments.where('id').anyOf(['apt-millie-active', 'apt-prev-001']).delete().catch(() => {}),
-      db.serviceLogs.where('id').anyOf(['log-prev-1']).delete().catch(() => {}),
+      db.clients.where('id').anyOf(devClientIds).delete().catch(() => {}),
+      db.appointments.where('id').anyOf(devAptIds).delete().catch(() => {}),
+      db.serviceLogs.where('id').anyOf(devLogIds).delete().catch(() => {}),
     ]);
+
 
     return true;
   } catch (err) {
