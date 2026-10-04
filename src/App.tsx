@@ -15,6 +15,7 @@ import { NewClientModal } from './components/clients/NewClientModal';
 import { useSessionStore } from './stores/useSessionStore';
 import { Armchair, Plus } from 'lucide-react';
 import type { AppointmentRecord, ClientRecord } from './types';
+import { playTactileTick } from './utils/audio';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('desk');
@@ -111,8 +112,8 @@ export function App() {
               onViewSizingVault={() => setActiveTab('vault')}
             />
           ) : (
-            <div className="w-full bg-studio-surface border border-studio-elevated rounded-3xl p-8 text-center space-y-4 shadow-lg select-none">
-              <div className="w-14 h-14 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-center mx-auto text-stone-500">
+            <div className="w-full hairline-card rounded-2xl p-8 text-center space-y-4 select-none">
+              <div className="w-14 h-14 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-center mx-auto text-stone-500 shadow-inner">
                 <Armchair className="w-7 h-7" />
               </div>
               <div className="space-y-1">
@@ -127,16 +128,22 @@ export function App() {
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setActiveModal('new-apt')}
-                  className="touch-target px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-2 shadow-md active:scale-95 transition-all"
+                  onClick={() => {
+                    playTactileTick();
+                    setActiveModal('new-apt');
+                  }}
+                  className="touch-target px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-2 shadow-md tactile-btn"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
                   <span>SEAT WALK-IN NOW</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('quote')}
-                  className="touch-target px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-800 font-mono text-xs font-semibold"
+                  onClick={() => {
+                    playTactileTick();
+                    setActiveTab('quote');
+                  }}
+                  className="touch-target px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-800 font-mono text-xs font-semibold tactile-btn"
                 >
                   CALCULATE QUOTE
                 </button>

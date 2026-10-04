@@ -5,6 +5,7 @@ import {
   Check,
   Copy,
   Armchair,
+  Receipt,
 } from 'lucide-react';
 import {
   useQuoteStore,
@@ -18,6 +19,7 @@ import { useSessionStore } from '../../stores/useSessionStore';
 import { db } from '../../db/schema';
 import { useLiveQuery } from 'dexie-react-hooks';
 import type { AppointmentRecord } from '../../types';
+import { playTactileTick } from '../../utils/audio';
 
 interface QuoteEngineViewProps {
   onSeatClient?: (appointmentId: string) => void;
@@ -57,8 +59,34 @@ export const QuoteEngineView: React.FC<QuoteEngineViewProps> = ({
   const totalPrice = getTotalPrice();
   const totalDuration = getTotalDuration();
 
+  const handleSelectBase = (id: string) => {
+    playTactileTick();
+    setBaseService(id);
+  };
+
+  const handleSelectTier = (tier: number) => {
+    playTactileTick();
+    setArtTier(tier);
+  };
+
+  const handleIncrementRepairs = () => {
+    playTactileTick();
+    incrementRepairs();
+  };
+
+  const handleDecrementRepairs = () => {
+    playTactileTick();
+    decrementRepairs();
+  };
+
+  const handleToggleRemoval = () => {
+    playTactileTick();
+    toggleForeignRemoval();
+  };
+
   const handleCopyQuote = () => {
-    const text = `LACQUERED QUOTE:
+    playTactileTick();
+    const text = `LACQUERED STUDIO QUOTE:
 ${selectedBase.name} ($${selectedBase.price})
 Art Tier ${selectedTier}: ${selectedTierObj.name} (+$${selectedTierObj.price})
 ${nailRepairsCount > 0 ? `Repairs: ${nailRepairsCount} nails (+$${nailRepairsCount * NAIL_REPAIR_PRICE})\n` : ''}${hasForeignRemoval ? `Foreign Removal: Yes (+$${FOREIGN_REMOVAL_PRICE})\n` : ''}---
@@ -70,6 +98,7 @@ Total: $${totalPrice} (${totalDuration} min)`;
   };
 
   const handleSeatNow = async () => {
+    playTactileTick();
     setIsSaving(true);
     try {
       const client = clients.find((c) => c.id === selectedClientId) || clients[0];
@@ -107,28 +136,28 @@ Total: $${totalPrice} (${totalDuration} min)`;
             Consultation Quote
           </h2>
           <span className="text-xs font-mono text-stone-400">
-            Tap service &amp; art tiers to calculate pricing
+            Tap extension &amp; art tiers for instant pricing calculation
           </span>
         </div>
 
         <select
           value={selectedClientId}
           onChange={(e) => setSelectedClientId(e.target.value)}
-          className="bg-stone-900 border border-stone-800 text-stone-200 text-xs font-mono rounded-xl px-3 py-2 focus:outline-none"
+          className="bg-stone-900 border border-stone-800 text-stone-200 text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-stone-700"
         >
           <option value="">Walk-In Guest</option>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name} {c.allergies.hema ? '⚠️ (HEMA)' : ''}
+              {c.name} {c.allergies.hema ? '[HEMA Sensitive]' : ''}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Base Services (Minimal Cards) */}
+      {/* Base Services */}
       <div className="space-y-2">
         <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold">
-          Base Service
+          1. Base Extension / Structure
         </span>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {BASE_SERVICES.map((base) => {
@@ -137,15 +166,15 @@ Total: $${totalPrice} (${totalDuration} min)`;
               <button
                 key={base.id}
                 type="button"
-                onClick={() => setBaseService(base.id)}
-                className={`min-h-touch p-3 rounded-xl text-left transition-colors border active:scale-[0.98] ${
+                onClick={() => handleSelectBase(base.id)}
+                className={`min-h-touch p-3 rounded-xl text-left tactile-btn border ${
                   isSelected
-                    ? 'bg-stone-800 border-amber-400/80 text-stone-100 font-semibold'
+                    ? 'bg-stone-800/90 border-amber-400/90 text-stone-100 ring-1 ring-amber-400/30'
                     : 'bg-stone-900/60 hover:bg-stone-900 border-stone-800/80 text-stone-300'
                 }`}
               >
                 <div className="text-xs font-medium text-stone-200 truncate">{base.name}</div>
-                <div className="text-sm font-mono font-bold text-amber-300 mt-1">${base.price}</div>
+                <div className="text-sm font-mono tabular-nums font-bold text-amber-300 mt-1">${base.price}</div>
                 <div className="text-[10px] font-mono text-stone-500">{base.duration}m</div>
               </button>
             );
@@ -156,7 +185,7 @@ Total: $${totalPrice} (${totalDuration} min)`;
       {/* Art Tiers */}
       <div className="space-y-2">
         <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold">
-          Art Tier
+          2. Nail Art Tier Complexity
         </span>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {ART_TIERS.map((tier) => {
@@ -165,16 +194,16 @@ Total: $${totalPrice} (${totalDuration} min)`;
               <button
                 key={tier.tier}
                 type="button"
-                onClick={() => setArtTier(tier.tier)}
-                className={`min-h-touch p-3 rounded-xl text-left transition-colors border active:scale-[0.98] ${
+                onClick={() => handleSelectTier(tier.tier)}
+                className={`min-h-touch p-3 rounded-xl text-left tactile-btn border ${
                   isSelected
-                    ? 'bg-stone-800 border-amber-400/80 text-stone-100 font-semibold'
+                    ? 'bg-stone-800/90 border-amber-400/90 text-stone-100 ring-1 ring-amber-400/30'
                     : 'bg-stone-900/60 hover:bg-stone-900 border-stone-800/80 text-stone-300'
                 }`}
               >
                 <div className="text-xs font-mono font-bold text-amber-400">Tier {tier.tier}</div>
                 <div className="text-[11px] text-stone-200 mt-0.5 truncate">{tier.name.split(': ')[1] || tier.name}</div>
-                <div className="text-xs font-mono text-stone-400 mt-1">
+                <div className="text-xs font-mono tabular-nums text-stone-400 mt-1">
                   {tier.price > 0 ? `+$${tier.price}` : '$0'}
                 </div>
               </button>
@@ -186,28 +215,30 @@ Total: $${totalPrice} (${totalDuration} min)`;
       {/* Add-ons */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
         {/* Nail Repairs */}
-        <div className="flex items-center justify-between p-3 rounded-xl bg-stone-900/60 border border-stone-800">
+        <div className="flex items-center justify-between p-3.5 rounded-xl hairline-card">
           <div>
-            <span className="text-xs font-medium text-stone-200">Nail Repairs</span>
-            <div className="text-[10px] text-stone-500 font-mono">${NAIL_REPAIR_PRICE} / nail</div>
+            <span className="text-xs font-medium text-stone-200">Emergency Nail Repairs</span>
+            <div className="text-[10px] text-stone-500 font-mono">${NAIL_REPAIR_PRICE} / nail tip</div>
           </div>
           <div className="flex items-center space-x-2">
             <button
               type="button"
               disabled={nailRepairsCount <= 0}
-              onClick={decrementRepairs}
-              className="touch-target w-9 h-9 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 disabled:opacity-20 flex items-center justify-center transition-colors active:scale-95"
+              onClick={handleDecrementRepairs}
+              className="touch-target w-10 h-10 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 disabled:opacity-20 flex items-center justify-center tactile-btn"
+              aria-label="Decrease nail repairs"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="font-mono text-base font-bold text-amber-300 w-6 text-center">
+            <span className="font-mono tabular-nums text-base font-bold text-amber-300 w-6 text-center">
               {nailRepairsCount}
             </span>
             <button
               type="button"
               disabled={nailRepairsCount >= 10}
-              onClick={incrementRepairs}
-              className="touch-target w-9 h-9 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 disabled:opacity-20 flex items-center justify-center transition-colors active:scale-95"
+              onClick={handleIncrementRepairs}
+              className="touch-target w-10 h-10 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 disabled:opacity-20 flex items-center justify-center tactile-btn"
+              aria-label="Increase nail repairs"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -217,21 +248,21 @@ Total: $${totalPrice} (${totalDuration} min)`;
         {/* Foreign Removal */}
         <button
           type="button"
-          onClick={toggleForeignRemoval}
-          className={`min-h-touch p-3 rounded-xl border flex items-center justify-between transition-colors active:scale-[0.98] ${
+          onClick={handleToggleRemoval}
+          className={`min-h-touch p-3.5 rounded-xl border flex items-center justify-between tactile-btn ${
             hasForeignRemoval
-              ? 'bg-stone-800 border-amber-400/80 text-stone-100'
+              ? 'bg-stone-800/90 border-amber-400/90 text-stone-100 ring-1 ring-amber-400/20'
               : 'bg-stone-900/60 border-stone-800 text-stone-300'
           }`}
         >
           <div>
             <span className="text-xs font-medium text-stone-200">Foreign Salon Removal</span>
-            <div className="text-[10px] text-stone-500 font-mono">+${FOREIGN_REMOVAL_PRICE} · +{FOREIGN_REMOVAL_DURATION}m</div>
+            <div className="text-[10px] text-stone-500 font-mono">+${FOREIGN_REMOVAL_PRICE} · +{FOREIGN_REMOVAL_DURATION}m soak</div>
           </div>
           <div
-            className={`w-6 h-6 rounded-md flex items-center justify-center border ${
+            className={`w-6 h-6 rounded-md flex items-center justify-center border transition-all ${
               hasForeignRemoval
-                ? 'bg-amber-400 border-amber-400 text-stone-950'
+                ? 'bg-amber-400 border-amber-400 text-stone-950 font-bold'
                 : 'border-stone-700 text-transparent'
             }`}
           >
@@ -240,15 +271,24 @@ Total: $${totalPrice} (${totalDuration} min)`;
         </button>
       </div>
 
-      {/* Summary Card */}
-      <div className="p-4 rounded-2xl bg-stone-900/90 border border-stone-800 flex flex-wrap items-center justify-between gap-4 mt-2">
-        <div className="flex items-baseline space-x-4">
-          <div>
-            <span className="text-[10px] font-mono uppercase text-stone-500 block">Total</span>
-            <span className="text-3xl font-mono font-bold text-amber-300">${totalPrice}</span>
+      {/* Summary Ticket Card (Taste & Impeccable) */}
+      <div className="p-5 rounded-2xl hairline-card flex flex-wrap items-center justify-between gap-4 mt-2">
+        <div className="flex items-center space-x-4">
+          <div className="w-10 h-10 rounded-xl bg-stone-900 border border-stone-800 flex items-center justify-center text-amber-400">
+            <Receipt className="w-5 h-5" />
           </div>
-          <div className="text-xs font-mono text-stone-400">
-            {totalDuration} mins buffer
+          <div>
+            <span className="text-[10px] font-mono uppercase text-stone-500 block font-semibold">
+              Quoted Total
+            </span>
+            <div className="flex items-baseline space-x-3">
+              <span className="text-3xl font-mono tabular-nums font-bold text-amber-300">
+                ${totalPrice}
+              </span>
+              <span className="text-xs font-mono text-stone-400">
+                {totalDuration} mins chair buffer
+              </span>
+            </div>
           </div>
         </div>
 
@@ -256,9 +296,9 @@ Total: $${totalPrice} (${totalDuration} min)`;
           <button
             type="button"
             onClick={handleCopyQuote}
-            className="touch-target px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-mono text-xs flex items-center space-x-1.5 transition-colors active:scale-95"
+            className="touch-target px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 font-mono text-xs flex items-center space-x-1.5 border border-stone-800 tactile-btn"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied' : 'Copy'}</span>
           </button>
 
@@ -266,7 +306,7 @@ Total: $${totalPrice} (${totalDuration} min)`;
             type="button"
             disabled={isSaving}
             onClick={handleSeatNow}
-            className="touch-target px-4 py-2 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-1.5 transition-colors active:scale-95"
+            className="touch-target px-4 py-2 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-1.5 tactile-btn shadow-md disabled:opacity-50"
           >
             <Armchair className="w-4 h-4 stroke-[2.5]" />
             <span>Seat in Chair</span>

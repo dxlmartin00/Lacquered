@@ -10,6 +10,7 @@ import type { ClientRecord, SizingProfile } from '../../types';
 import { FingerSizingMap } from './FingerSizingMap';
 import { db } from '../../db/schema';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { playTactileTick } from '../../utils/audio';
 
 interface ClientDetailModalProps {
   clientId: string | null;
@@ -34,7 +35,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
     [clientId]
   ) || [];
 
-  const [activeTab, setActiveTab] = useState<'sizing' | 'history' | 'profile'>('sizing');
+  const [activeTab, setActiveTab] = useState<'sizing' | 'history'>('sizing');
 
   if (!isOpen || !client) return null;
 
@@ -49,6 +50,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
   };
 
   const handleDeleteClient = async () => {
+    playTactileTick();
     if (window.confirm(`Delete client record for ${client.name}?`)) {
       try {
         await db.clients.delete(client.id);
@@ -61,9 +63,9 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-studio-surface border border-studio-elevated rounded-3xl p-5 md:p-7 shadow-2xl space-y-6 my-auto max-h-[92dvh] overflow-y-auto">
+      <div className="relative w-full max-w-4xl hairline-card rounded-3xl p-5 md:p-7 shadow-2xl space-y-6 my-auto max-h-[92dvh] overflow-y-auto modal-spring-enter">
         {/* Header */}
-        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-studio-elevated">
+        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-stone-800/80">
           <div className="space-y-1">
             <div className="flex items-center space-x-3">
               <h2 className="text-xl sm:text-2xl font-bold font-sans text-stone-100">
@@ -98,15 +100,21 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
             {onSeatInChair && (
               <button
                 type="button"
-                onClick={() => onSeatInChair(client)}
-                className="touch-target px-4 py-2 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold transition-all shadow-md active:scale-95"
+                onClick={() => {
+                  playTactileTick();
+                  onSeatInChair(client);
+                }}
+                className="touch-target px-4 py-2 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold transition-all shadow-md tactile-btn"
               >
                 Seat In Chair
               </button>
             )}
 
             <button
-              onClick={onClose}
+              onClick={() => {
+                playTactileTick();
+                onClose();
+              }}
               className="touch-target p-2 rounded-xl text-stone-400 hover:text-stone-100 hover:bg-stone-800"
               aria-label="Close"
             >
@@ -129,11 +137,14 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
         )}
 
         {/* Navigation Tabs (Sizing Map vs Service History) */}
-        <div className="flex items-center space-x-2 border-b border-studio-elevated pb-2">
+        <div className="flex items-center space-x-2 border-b border-stone-800/80 pb-2">
           <button
             type="button"
-            onClick={() => setActiveTab('sizing')}
-            className={`min-h-[40px] px-3.5 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all ${
+            onClick={() => {
+              playTactileTick();
+              setActiveTab('sizing');
+            }}
+            className={`min-h-[40px] px-3.5 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all tactile-chip ${
               activeTab === 'sizing'
                 ? 'bg-stone-800 text-stone-100 border border-stone-700'
                 : 'text-stone-400 hover:text-stone-200'
@@ -143,8 +154,11 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('history')}
-            className={`min-h-[40px] px-3.5 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all ${
+            onClick={() => {
+              playTactileTick();
+              setActiveTab('history');
+            }}
+            className={`min-h-[40px] px-3.5 py-1.5 rounded-xl font-mono text-xs font-semibold transition-all tactile-chip ${
               activeTab === 'history'
                 ? 'bg-stone-800 text-stone-100 border border-stone-700'
                 : 'text-stone-400 hover:text-stone-200'
@@ -208,8 +222,8 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   </div>
 
                   <div className="pt-2 border-t border-stone-900 flex items-center justify-between text-stone-400">
-                    <span>Billed: ${log.finalBilled}</span>
-                    <span>Tip: +${log.tip}</span>
+                    <span className="tabular-nums">Billed: ${log.finalBilled}</span>
+                    <span className="tabular-nums">Tip: +${log.tip}</span>
                   </div>
                 </div>
               ))
@@ -218,11 +232,11 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
         )}
 
         {/* Footer actions */}
-        <div className="pt-3 border-t border-studio-elevated flex items-center justify-between">
+        <div className="pt-3 border-t border-stone-800/80 flex items-center justify-between">
           <button
             type="button"
             onClick={handleDeleteClient}
-            className="touch-target px-3 py-2 text-xs font-mono text-stone-500 hover:text-rose-400 flex items-center space-x-1.5 transition-colors"
+            className="touch-target px-3 py-2 text-xs font-mono text-stone-500 hover:text-rose-400 flex items-center space-x-1.5 transition-colors tactile-btn"
           >
             <Trash2 className="w-4 h-4" />
             <span>Delete Client</span>
@@ -230,8 +244,11 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
 
           <button
             type="button"
-            onClick={onClose}
-            className="touch-target px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-mono text-xs font-semibold"
+            onClick={() => {
+              playTactileTick();
+              onClose();
+            }}
+            className="touch-target px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-mono text-xs font-semibold tactile-btn"
           >
             Close
           </button>

@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/schema';
 import type { AppointmentRecord } from '../../types';
 import { BASE_SERVICES, ART_TIERS } from '../../stores/useQuoteStore';
+import { playTactileTick } from '../../utils/audio';
 
 interface NewAppointmentModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    playTactileTick();
     setIsSubmitting(true);
     try {
       const selectedClient = clients.find((c) => c.id === clientId);
@@ -62,9 +64,9 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none">
-      <div className="relative w-full max-w-lg bg-studio-surface border border-studio-elevated rounded-2xl p-5 md:p-6 shadow-2xl space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-studio-elevated">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none overflow-y-auto">
+      <div className="relative w-full max-w-lg hairline-card rounded-2xl p-5 md:p-6 shadow-2xl space-y-5 my-auto max-h-[92dvh] overflow-y-auto modal-spring-enter">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-800/80">
           <div className="flex items-center space-x-2">
             <Calendar className="w-5 h-5 text-amber-400" />
             <h3 className="font-mono text-sm uppercase tracking-wider font-bold text-stone-100">
@@ -89,12 +91,12 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-stone-600"
+              className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-stone-700"
             >
               <option value="">Guest / New Walk-In Client</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} {c.allergies.hema ? '⚠️ (HEMA)' : ''}
+                  {c.name} {c.allergies.hema ? '[HEMA Sensitive]' : ''}
                 </option>
               ))}
             </select>
@@ -105,7 +107,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 placeholder="Guest Name..."
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
-                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-stone-600 mt-2"
+                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-stone-700 mt-2"
               />
             )}
           </div>
@@ -155,7 +157,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 type="number"
                 value={quotedPrice}
                 onChange={(e) => setQuotedPrice(Number(e.target.value))}
-                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 font-mono text-sm text-stone-100 text-center"
+                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 font-mono tabular-nums text-sm text-stone-100 text-center"
               />
             </div>
             <div className="space-y-1">
@@ -164,7 +166,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 type="number"
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 font-mono text-sm text-stone-100 text-center"
+                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 font-mono tabular-nums text-sm text-stone-100 text-center"
               />
             </div>
             <div className="space-y-1">
@@ -173,7 +175,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 type="number"
                 value={depositPaid}
                 onChange={(e) => setDepositPaid(Number(e.target.value))}
-                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 font-mono text-sm text-stone-100 text-center"
+                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 font-mono tabular-nums text-sm text-stone-100 text-center"
               />
             </div>
           </div>
@@ -186,8 +188,11 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
             </div>
             <button
               type="button"
-              onClick={() => setSeatNow(!seatNow)}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center border transition-all ${
+              onClick={() => {
+                playTactileTick();
+                setSeatNow(!seatNow);
+              }}
+              className={`w-7 h-7 rounded-lg flex items-center justify-center border transition-all tactile-btn ${
                 seatNow ? 'bg-amber-400 border-amber-400 text-stone-950' : 'bg-stone-900 border-stone-700 text-transparent'
               }`}
             >
@@ -199,9 +204,9 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="touch-target w-full py-3.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center justify-center space-x-2 shadow-lg active:scale-95 transition-all"
+              className="touch-target w-full py-3.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center justify-center space-x-2 shadow-lg tactile-btn disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>{seatNow ? 'CONFIRM & SEAT CLIENT NOW' : 'ADD TO DAILY SCHEDULE'}</span>
             </button>
           </div>

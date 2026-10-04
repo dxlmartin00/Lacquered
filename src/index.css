@@ -8,41 +8,65 @@
     --sar: env(safe-area-inset-right, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
+
+    /* Emil Kowalski custom easing curves */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   }
 
-  html, body {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  body {
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
     -webkit-touch-callout: none;
-    user-select: none;
-    touch-action: manipulation;
     background-color: #0c0a09;
     color: #f5f5f4;
     min-height: 100dvh;
     height: 100dvh;
     width: 100vw;
     overflow: hidden;
+    caret-color: #f59e0b;
   }
 
-  /* Prevent iOS Safari from zooming inputs on focus */
+  ::selection {
+    background-color: rgba(217, 119, 6, 0.28);
+    color: #fef3c7;
+  }
+
+  /* Prevent iOS Safari from zooming inputs on focus (Emil rule) */
   input, textarea, select {
     font-size: 16px !important;
-    user-select: auto;
+    touch-action: manipulation;
   }
 
-  /* Custom high-contrast scrollbars for studio darkroom */
+  /* Controls never have long-press text selection (Emil mobile-native rule) */
+  button, [role="button"], .touch-control {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Custom high-grade darkroom scrollbars */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #0c0a09;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
     background: #292524;
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -51,6 +75,7 @@
 }
 
 @layer utilities {
+  /* Safe area insets */
   .safe-pt {
     padding-top: max(12px, env(safe-area-inset-top));
   }
@@ -63,13 +88,64 @@
   .safe-pr {
     padding-right: max(12px, env(safe-area-inset-right));
   }
-  
-  /* Glove touch target assurance */
+
+  /* Glove touch target assurance (Min 48px target) */
   .touch-target {
     min-width: 48px;
     min-height: 48px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Tabular numbers to prevent layout shifts during timer countdown */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Liquid glass physical refraction (Taste Skill & Impeccable) */
+  .liquid-glass {
+    background: rgba(23, 21, 19, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .hairline-card {
+    background: #141210;
+    border: 1px solid rgba(68, 64, 60, 0.4);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  }
+
+  /* Tactile press feedback (Emil Kowalski principle) */
+  .tactile-btn {
+    transition: transform 120ms var(--ease-out), background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  }
+  .tactile-btn:active {
+    transform: scale(0.97);
+  }
+
+  .tactile-chip {
+    transition: transform 100ms var(--ease-out), background-color 120ms ease, border-color 120ms ease;
+  }
+  .tactile-chip:active {
+    transform: scale(0.95);
+  }
+
+  /* Modal entry starting from scale(0.96) - never scale(0) */
+  .modal-spring-enter {
+    animation: modalSpring 240ms var(--ease-spring) forwards;
+  }
+}
+
+@keyframes modalSpring {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }

@@ -9,6 +9,7 @@ import {
 import type { ClientRecord } from '../../types';
 import { ClientDetailModal } from './ClientDetailModal';
 import { NewClientModal } from './NewClientModal';
+import { playTactileTick } from '../../utils/audio';
 
 interface ClientVaultProps {
   clients: ClientRecord[];
@@ -33,8 +34,14 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
   });
 
   const handleOpenClient = (id: string) => {
+    playTactileTick();
     setSelectedClientId(id);
     setIsDetailOpen(true);
+  };
+
+  const handleOpenNew = () => {
+    playTactileTick();
+    setIsNewClientOpen(true);
   };
 
   const formatHandSizes = (hand: Record<string, number>) => {
@@ -51,17 +58,17 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
           <h2 className="text-lg font-display font-bold uppercase tracking-wider text-stone-100">
             Client Vault
           </h2>
-          <span className="text-xs font-mono text-stone-400">
+          <span className="text-xs font-mono tabular-nums text-stone-400">
             {clients.length} registered clients
           </span>
         </div>
 
         <button
           type="button"
-          onClick={() => setIsNewClientOpen(true)}
-          className="touch-target px-3.5 py-1.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-1.5 transition-colors active:scale-95"
+          onClick={handleOpenNew}
+          className="touch-target px-3.5 py-1.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-1.5 tactile-btn shadow-sm"
         >
-          <UserPlus className="w-3.5 h-3.5" />
+          <UserPlus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>New Client</span>
         </button>
       </div>
@@ -74,7 +81,7 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by client name, shape, phone..."
-          className="w-full bg-studio-surface border border-stone-800 rounded-xl pl-10 pr-4 py-2.5 text-xs font-mono text-stone-100 placeholder-stone-500 focus:outline-none focus:border-stone-600"
+          className="w-full bg-[#141210] border border-stone-800 rounded-xl pl-10 pr-4 py-2.5 text-base md:text-xs font-mono text-stone-100 placeholder-stone-500 focus:outline-none focus:border-stone-600 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]"
         />
       </div>
 
@@ -91,7 +98,7 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
               <div
                 key={client.id}
                 onClick={() => handleOpenClient(client.id)}
-                className="bg-studio-surface border border-stone-800/80 hover:border-stone-700 p-4 rounded-xl cursor-pointer transition-colors flex items-center justify-between gap-3"
+                className="hairline-card hover:border-stone-700 p-4 rounded-xl cursor-pointer transition-colors flex items-center justify-between gap-3 active:scale-[0.99]"
               >
                 <div className="space-y-1 min-w-0">
                   <div className="flex items-center space-x-2">
@@ -105,7 +112,7 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
                     )}
                     {hasAllergy && (
                       <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 flex items-center space-x-1">
-                        <ShieldAlert className="w-2.5 h-2.5" />
+                        <ShieldAlert className="w-2.5 h-2.5 text-rose-400" />
                         <span>HEMA</span>
                       </span>
                     )}
@@ -114,9 +121,9 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
                   <div className="text-[11px] font-mono text-stone-400 truncate">
                     <span>{client.preferredShape} · {client.preferredLength}</span>
                     <span className="text-stone-600 mx-2">•</span>
-                    <span className="text-stone-400">L: {formatHandSizes(client.sizing.leftHand)}</span>
+                    <span className="text-stone-400 tabular-nums">L: {formatHandSizes(client.sizing.leftHand)}</span>
                     <span className="text-stone-600 mx-1">|</span>
-                    <span className="text-stone-400">R: {formatHandSizes(client.sizing.rightHand)}</span>
+                    <span className="text-stone-400 tabular-nums">R: {formatHandSizes(client.sizing.rightHand)}</span>
                   </div>
                 </div>
 
@@ -126,9 +133,10 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
+                        playTactileTick();
                         onSeatInChair(client);
                       }}
-                      className="touch-target px-3 py-1 text-xs font-mono font-semibold rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-800 flex items-center space-x-1"
+                      className="touch-target px-3 py-1 text-xs font-mono font-semibold rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-800 flex items-center space-x-1 tactile-btn"
                     >
                       <Armchair className="w-3.5 h-3.5 text-emerald-400" />
                       <span>Seat</span>

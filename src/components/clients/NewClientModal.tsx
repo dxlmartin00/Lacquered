@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, UserPlus, ShieldAlert } from 'lucide-react';
+import { X, UserPlus, ShieldAlert, Check } from 'lucide-react';
 import { db } from '../../db/schema';
 import type { ClientRecord, NailShape, NailLength } from '../../types';
+import { playTactileTick } from '../../utils/audio';
 
 interface NewClientModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
+    playTactileTick();
 
     setIsSubmitting(true);
     try {
@@ -69,10 +71,35 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
     }
   };
 
+  const toggleHema = () => {
+    playTactileTick();
+    setHema(!hema);
+  };
+
+  const toggleAcrylates = () => {
+    playTactileTick();
+    setAcrylates(!acrylates);
+  };
+
+  const toggleAcetone = () => {
+    playTactileTick();
+    setAcetone(!acetone);
+  };
+
+  const selectShape = (s: NailShape) => {
+    playTactileTick();
+    setPreferredShape(s);
+  };
+
+  const selectLength = (l: NailLength) => {
+    playTactileTick();
+    setPreferredLength(l);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-studio-surface border border-studio-elevated rounded-2xl p-5 md:p-6 shadow-2xl space-y-5 my-auto max-h-[92dvh] overflow-y-auto">
-        <div className="flex items-center justify-between pb-3 border-b border-studio-elevated">
+      <div className="relative w-full max-w-lg hairline-card rounded-2xl p-5 md:p-6 shadow-2xl space-y-5 my-auto max-h-[92dvh] overflow-y-auto modal-spring-enter">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-800/80">
           <div className="flex items-center space-x-2">
             <UserPlus className="w-5 h-5 text-amber-400" />
             <h3 className="font-mono text-sm uppercase tracking-wider font-bold text-stone-100">
@@ -101,7 +128,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Maya Lin"
-                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-stone-600"
+                className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-stone-700"
               />
             </div>
 
@@ -115,7 +142,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+1 (415) 000-0000"
-                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 font-mono focus:outline-none focus:border-stone-600"
+                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 font-mono focus:outline-none focus:border-stone-700"
                 />
               </div>
               <div>
@@ -127,7 +154,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   value={instagram}
                   onChange={(e) => setInstagram(e.target.value)}
                   placeholder="@handle"
-                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 font-mono focus:outline-none focus:border-stone-600"
+                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 font-mono focus:outline-none focus:border-stone-700"
                 />
               </div>
             </div>
@@ -145,8 +172,8 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => setHema(!hema)}
-                className={`min-h-touch p-2.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-between ${
+                onClick={toggleHema}
+                className={`min-h-touch p-2.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-between tactile-chip ${
                   hema
                     ? 'bg-rose-950 border-rose-600 text-rose-200'
                     : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-300'
@@ -154,14 +181,14 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               >
                 <span>HEMA</span>
                 <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] ${hema ? 'bg-rose-500 text-white' : 'border border-stone-700'}`}>
-                  {hema && '✓'}
+                  {hema && <Check className="w-3 h-3 stroke-[2.5]" />}
                 </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setAcrylates(!acrylates)}
-                className={`min-h-touch p-2.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-between ${
+                onClick={toggleAcrylates}
+                className={`min-h-touch p-2.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-between tactile-chip ${
                   acrylates
                     ? 'bg-rose-950 border-rose-600 text-rose-200'
                     : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-300'
@@ -169,14 +196,14 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               >
                 <span>Acrylates</span>
                 <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] ${acrylates ? 'bg-rose-500 text-white' : 'border border-stone-700'}`}>
-                  {acrylates && '✓'}
+                  {acrylates && <Check className="w-3 h-3 stroke-[2.5]" />}
                 </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setAcetone(!acetone)}
-                className={`min-h-touch p-2.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-between ${
+                onClick={toggleAcetone}
+                className={`min-h-touch p-2.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-between tactile-chip ${
                   acetone
                     ? 'bg-amber-950 border-amber-600 text-amber-200'
                     : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-300'
@@ -184,7 +211,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               >
                 <span>Acetone</span>
                 <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] ${acetone ? 'bg-amber-500 text-stone-950 font-extrabold' : 'border border-stone-700'}`}>
-                  {acetone && '✓'}
+                  {acetone && <Check className="w-3 h-3 stroke-[2.5]" />}
                 </span>
               </button>
             </div>
@@ -195,7 +222,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                 value={allergyNotes}
                 onChange={(e) => setAllergyNotes(e.target.value)}
                 placeholder="Specific reactions, safe alternative products..."
-                className="w-full bg-stone-900 border border-stone-800 rounded-lg px-3 py-1.5 text-xs text-stone-100 focus:outline-none focus:border-stone-600"
+                className="w-full bg-stone-900 border border-stone-800 rounded-lg px-3 py-1.5 text-xs text-stone-100 focus:outline-none focus:border-stone-700"
               />
             )}
           </div>
@@ -211,8 +238,8 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   <button
                     key={shape}
                     type="button"
-                    onClick={() => setPreferredShape(shape)}
-                    className={`min-h-[40px] px-2 py-1 text-xs font-mono rounded-lg border transition-all ${
+                    onClick={() => selectShape(shape)}
+                    className={`min-h-[40px] px-2 py-1 text-xs font-mono rounded-lg border tactile-chip ${
                       preferredShape === shape
                         ? 'bg-stone-100 text-stone-950 font-bold border-white'
                         : 'bg-stone-900 text-stone-400 border-stone-800 hover:text-stone-200'
@@ -233,8 +260,8 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   <button
                     key={len}
                     type="button"
-                    onClick={() => setPreferredLength(len)}
-                    className={`min-h-[40px] px-2 py-1 text-xs font-mono rounded-lg border transition-all ${
+                    onClick={() => selectLength(len)}
+                    className={`min-h-[40px] px-2 py-1 text-xs font-mono rounded-lg border tactile-chip ${
                       preferredLength === len
                         ? 'bg-amber-400 text-stone-950 font-bold border-amber-300'
                         : 'bg-stone-900 text-stone-400 border-stone-800 hover:text-stone-200'
@@ -252,9 +279,9 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !name.trim()}
-              className="touch-target w-full py-3.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center justify-center space-x-2 shadow-lg active:scale-95 transition-all disabled:opacity-50"
+              className="touch-target w-full py-3.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center justify-center space-x-2 shadow-lg tactile-btn disabled:opacity-50"
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus className="w-4 h-4 stroke-[2.5]" />
               <span>SAVE CLIENT TO LOCAL VAULT</span>
             </button>
           </div>

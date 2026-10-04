@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/schema';
 import type { ServiceLogRecord } from '../../types';
+import { playTactileTick } from '../../utils/audio';
 
 export const ServiceLogVault: React.FC = () => {
   const serviceLogs = useLiveQuery(() => db.serviceLogs.reverse().sortBy('timestamp')) || [];
@@ -16,6 +17,16 @@ export const ServiceLogVault: React.FC = () => {
     return URL.createObjectURL(blob);
   };
 
+  const handleOpenPhoto = (log: ServiceLogRecord) => {
+    playTactileTick();
+    setSelectedPhotoLog(log);
+  };
+
+  const handleClosePhoto = () => {
+    playTactileTick();
+    setSelectedPhotoLog(null);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4 pb-20 md:pb-6 select-none">
       {/* Header */}
@@ -24,12 +35,12 @@ export const ServiceLogVault: React.FC = () => {
           <h2 className="text-lg font-display font-bold uppercase tracking-wider text-stone-100">
             Service Archive
           </h2>
-          <span className="text-xs font-mono text-stone-400">
+          <span className="text-xs font-mono tabular-nums text-stone-400">
             {serviceLogs.length} logged sessions
           </span>
         </div>
 
-        <div className="text-right font-mono text-xs">
+        <div className="text-right font-mono tabular-nums text-xs">
           <span className="text-stone-100 font-bold">${totalRevenue}</span>
           <span className="text-stone-500 mx-1.5">•</span>
           <span className="text-amber-400">+${totalTips} tip</span>
@@ -50,7 +61,7 @@ export const ServiceLogVault: React.FC = () => {
             return (
               <div
                 key={log.id}
-                className="bg-studio-surface border border-stone-800/80 p-4 rounded-xl flex items-center justify-between gap-4"
+                className="hairline-card p-4 rounded-xl flex items-center justify-between gap-4"
               >
                 <div className="space-y-1 min-w-0">
                   <div className="flex items-center space-x-2">
@@ -82,7 +93,7 @@ export const ServiceLogVault: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-3 shrink-0">
-                  <div className="text-right font-mono text-xs">
+                  <div className="text-right font-mono tabular-nums text-xs">
                     <div className="font-bold text-stone-100">${log.finalBilled}</div>
                     {log.tip > 0 && <div className="text-[10px] text-amber-400">+${log.tip}</div>}
                   </div>
@@ -90,9 +101,9 @@ export const ServiceLogVault: React.FC = () => {
                   {photoUrl ? (
                     <img
                       src={photoUrl}
-                      alt="Set"
-                      onClick={() => setSelectedPhotoLog(log)}
-                      className="w-11 h-11 object-cover rounded-lg cursor-pointer border border-stone-700 hover:opacity-80 transition-opacity"
+                      alt="Finished Set"
+                      onClick={() => handleOpenPhoto(log)}
+                      className="w-12 h-12 object-cover rounded-lg cursor-pointer border border-stone-700 hover:border-amber-400/60 transition-colors shadow-sm tactile-btn"
                     />
                   ) : null}
                 </div>
@@ -105,20 +116,20 @@ export const ServiceLogVault: React.FC = () => {
       {/* Full-Screen Photo Modal */}
       {selectedPhotoLog && selectedPhotoLog.resultPhotoBlob && (
         <div
-          onClick={() => setSelectedPhotoLog(null)}
+          onClick={handleClosePhoto}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-2xl max-h-[85dvh] bg-stone-950 border border-stone-800 rounded-2xl p-4 space-y-3"
+            className="relative max-w-2xl max-h-[85dvh] hairline-card rounded-2xl p-4 space-y-3 modal-spring-enter"
           >
             <div className="flex items-center justify-between pb-2 border-b border-stone-800">
               <span className="font-mono text-xs text-stone-300">
                 {selectedPhotoLog.clientName} · {selectedPhotoLog.baseService}
               </span>
               <button
-                onClick={() => setSelectedPhotoLog(null)}
-                className="p-1 text-stone-400 hover:text-stone-100"
+                onClick={handleClosePhoto}
+                className="touch-target p-1 text-stone-400 hover:text-stone-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -126,7 +137,7 @@ export const ServiceLogVault: React.FC = () => {
 
             <img
               src={getBlobUrl(selectedPhotoLog.resultPhotoBlob)!}
-              alt="Set"
+              alt="Finished Set"
               className="max-h-[70dvh] max-w-full rounded-xl object-contain mx-auto"
             />
           </div>

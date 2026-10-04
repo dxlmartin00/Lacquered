@@ -25,3 +25,7 @@ Thumbs.db
 
 # Scratch and generator scripts
 generate_icons.js
+
+# Agent skills cache
+.agents/
+skills-lock.json

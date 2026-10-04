@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Save, Tag, Plus, Trash2 } from 'lucide-react';
 import type { ServiceFormula } from '../../types';
+import { playTactileTick } from '../../utils/audio';
 
 interface FormulaLoggerModalProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
   if (!isOpen) return null;
 
   const handleAddShade = () => {
+    playTactileTick();
     setShadeCodes([...shadeCodes, '']);
   };
 
@@ -53,10 +55,22 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
   };
 
   const handleRemoveShade = (index: number) => {
+    playTactileTick();
     setShadeCodes(shadeCodes.filter((_, i) => i !== index));
   };
 
+  const handleSelectBrand = (brand: string) => {
+    playTactileTick();
+    setBaseBrand(brand);
+  };
+
+  const handleSelectTopCoat = (coat: 'Glossy' | 'Matte' | 'Chrome Gel') => {
+    playTactileTick();
+    setTopCoat(coat);
+  };
+
   const handleSave = () => {
+    playTactileTick();
     onSave({
       baseBrand,
       shadeCodes: shadeCodes.filter((s) => s.trim().length > 0),
@@ -67,9 +81,9 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm select-none">
-      <div className="relative w-full max-w-lg bg-studio-surface border border-studio-elevated rounded-2xl p-5 md:p-6 shadow-2xl space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-studio-elevated">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none overflow-y-auto">
+      <div className="relative w-full max-w-lg hairline-card rounded-2xl p-5 md:p-6 shadow-2xl space-y-5 my-auto max-h-[92dvh] overflow-y-auto modal-spring-enter">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-800/80">
           <div className="flex items-center space-x-2">
             <Tag className="w-5 h-5 text-amber-400" />
             <h3 className="font-mono text-sm uppercase tracking-wider font-bold text-stone-100">
@@ -95,10 +109,10 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
               <button
                 key={brand}
                 type="button"
-                onClick={() => setBaseBrand(brand)}
-                className={`min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
+                onClick={() => handleSelectBrand(brand)}
+                className={`min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-mono border tactile-chip ${
                   baseBrand === brand
-                    ? 'bg-amber-400/20 border-amber-400/70 text-amber-200 font-semibold'
+                    ? 'bg-amber-400/20 border-amber-400/80 text-amber-200 font-semibold'
                     : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200'
                 }`}
               >
@@ -111,7 +125,7 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
             value={baseBrand}
             onChange={(e) => setBaseBrand(e.target.value)}
             placeholder="Or custom brand..."
-            className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-stone-600"
+            className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-stone-700"
           />
         </div>
 
@@ -124,7 +138,7 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
             <button
               type="button"
               onClick={handleAddShade}
-              className="touch-target px-2 py-1 text-xs font-mono text-amber-400 hover:text-amber-300 flex items-center space-x-1"
+              className="touch-target px-2 py-1 text-xs font-mono text-amber-400 hover:text-amber-300 flex items-center space-x-1 tactile-btn"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Code</span>
@@ -138,14 +152,14 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
                   type="text"
                   value={code}
                   onChange={(e) => handleShadeChange(idx, e.target.value)}
-                  placeholder={`e.g. Kokoist E-148 Black Cherry or Chrome #04`}
-                  className="flex-1 bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-stone-600"
+                  placeholder="e.g. Kokoist E-148 Black Cherry or Chrome #04"
+                  className="flex-1 bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-stone-700"
                 />
                 {shadeCodes.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleRemoveShade(idx)}
-                    className="touch-target p-2 text-stone-500 hover:text-rose-400"
+                    className="touch-target p-2 text-stone-500 hover:text-rose-400 tactile-btn"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -165,8 +179,8 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
               <button
                 key={coat}
                 type="button"
-                onClick={() => setTopCoat(coat)}
-                className={`min-h-touch px-3 py-2 rounded-xl text-xs font-mono font-medium border transition-all ${
+                onClick={() => handleSelectTopCoat(coat)}
+                className={`min-h-touch px-3 py-2 rounded-xl text-xs font-mono font-medium border tactile-chip ${
                   topCoat === coat
                     ? 'bg-stone-100 border-white text-stone-950 font-bold'
                     : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200'
@@ -188,7 +202,7 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             placeholder="e.g., 2 thin coats, flash cured 30s each, non-wipe top coat full 60s cure."
-            className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-stone-600 resize-none"
+            className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-stone-700 resize-none"
           />
         </div>
 
@@ -197,7 +211,7 @@ export const FormulaLoggerModal: React.FC<FormulaLoggerModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="touch-target w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-mono text-sm font-bold flex items-center justify-center space-x-2 shadow-lg active:scale-95 transition-all"
+            className="touch-target w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-mono text-sm font-bold flex items-center justify-center space-x-2 shadow-lg tactile-btn"
           >
             <Save className="w-4 h-4" />
             <span>SAVE TO SERVICE LOG</span>

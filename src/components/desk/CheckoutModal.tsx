@@ -9,6 +9,7 @@ import {
 import type { AppointmentRecord, ServiceFormula, ServiceLogRecord } from '../../types';
 import { useImageCompressor, type CompressionResult } from '../../hooks/useImageCompressor';
 import { db } from '../../db/schema';
+import { playTactileTick, playChimeSuccess } from '../../utils/audio';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -41,6 +42,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   if (!isOpen) return null;
 
   const handleSelectTipPercent = (pct: number) => {
+    playTactileTick();
     setSelectedTipPercent(pct);
     setIsCustomTip(false);
     setTipAmount(Math.round((finalBilled * pct) / 100));
@@ -58,6 +60,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     try {
       const result = await compressImage(file, 1440, 0.8);
       setCompressedResult(result);
+      playTactileTick();
     } catch (err) {
       console.error('Failed to compress camera photo:', err);
     }
@@ -67,6 +70,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const balanceDue = Math.max(0, totalCollected - (appointment.depositPaid || 0));
 
   const handleCompleteService = async () => {
+    playChimeSuccess();
     setIsProcessing(true);
     try {
       // 1. Create permanent ServiceLogRecord
@@ -106,9 +110,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-studio-surface border border-studio-elevated rounded-2xl p-5 md:p-6 shadow-2xl space-y-5 my-auto max-h-[92dvh] overflow-y-auto">
+      <div className="relative w-full max-w-lg hairline-card rounded-2xl p-5 md:p-6 shadow-2xl space-y-5 my-auto max-h-[92dvh] overflow-y-auto modal-spring-enter">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-studio-elevated">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-800/80">
           <div className="flex items-center space-x-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             <div>
@@ -140,14 +144,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               type="number"
               value={finalBilled}
               onChange={(e) => setFinalBilled(Math.max(0, Number(e.target.value)))}
-              className="w-24 bg-stone-900 border border-stone-700 rounded-lg px-2.5 py-1.5 text-right font-mono font-bold text-stone-100 text-sm focus:outline-none focus:border-stone-500"
+              className="w-24 bg-stone-900 border border-stone-700 rounded-lg px-2.5 py-1.5 text-right font-mono tabular-nums font-bold text-stone-100 text-sm focus:outline-none focus:border-stone-500"
             />
           </div>
 
           {appointment.depositPaid > 0 && (
             <div className="flex items-center justify-between text-xs text-stone-400 font-mono">
               <span>Deposit Already Paid</span>
-              <span className="text-emerald-400">-${appointment.depositPaid}</span>
+              <span className="text-emerald-400 tabular-nums">-${appointment.depositPaid}</span>
             </div>
           )}
         </div>
@@ -159,7 +163,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
               <span>Gratuity / Tip</span>
             </label>
-            <span className="text-sm font-mono font-bold text-amber-300">${tipAmount}</span>
+            <span className="text-sm font-mono tabular-nums font-bold text-amber-300">${tipAmount}</span>
           </div>
 
           <div className="grid grid-cols-4 gap-2">
@@ -168,9 +172,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 key={pct}
                 type="button"
                 onClick={() => handleSelectTipPercent(pct)}
-                className={`min-h-touch px-2 py-2 rounded-xl text-xs font-mono font-bold border transition-all active:scale-95 ${
+                className={`min-h-touch px-2 py-2 rounded-xl text-xs font-mono font-bold border tactile-btn ${
                   !isCustomTip && selectedTipPercent === pct
-                    ? 'bg-amber-400 text-stone-950 border-amber-300 shadow-md'
+                    ? 'bg-amber-400 text-stone-950 border-amber-300 shadow-md font-extrabold'
                     : 'bg-stone-900 text-stone-300 border-stone-800 hover:bg-stone-800'
                 }`}
               >
@@ -185,12 +189,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               type="number"
               value={tipAmount}
               onChange={(e) => handleCustomTipChange(Number(e.target.value))}
-              className="flex-1 bg-stone-900 border border-stone-800 rounded-lg px-3 py-1.5 font-mono text-sm text-stone-100 focus:outline-none focus:border-stone-600"
+              className="flex-1 bg-stone-900 border border-stone-800 rounded-lg px-3 py-1.5 font-mono tabular-nums text-sm text-stone-100 focus:outline-none focus:border-stone-600"
             />
           </div>
         </div>
 
-        {/* Camera / Result Photo Capture (HTML5 Canvas WebP compression) */}
+        {/* Camera / Result Photo Capture */}
         <div className="space-y-2">
           <label className="text-xs font-mono uppercase tracking-wider text-stone-400 flex items-center space-x-1.5">
             <Camera className="w-3.5 h-3.5 text-amber-400" />
@@ -218,17 +222,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <FileCheck className="w-4 h-4" />
                   <span>Compressed WebP</span>
                 </div>
-                <div className="text-[11px] text-stone-400 font-mono mt-0.5">
+                <div className="text-[11px] text-stone-400 font-mono mt-0.5 tabular-nums">
                   {Math.round(compressedResult.compressedSizeBytes / 1024)} KB ({compressedResult.reductionPercentage}% smaller)
                 </div>
-                <div className="text-[10px] text-stone-500 font-mono">
+                <div className="text-[10px] text-stone-500 font-mono tabular-nums">
                   {compressedResult.width}×{compressedResult.height}px
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="touch-target px-2.5 py-1 text-xs font-mono text-stone-400 hover:text-stone-200"
+                onClick={() => {
+                  playTactileTick();
+                  fileInputRef.current?.click();
+                }}
+                className="touch-target px-2.5 py-1 text-xs font-mono text-stone-400 hover:text-stone-200 tactile-btn"
               >
                 Retake
               </button>
@@ -237,8 +244,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <button
               type="button"
               disabled={isCompressing}
-              onClick={() => fileInputRef.current?.click()}
-              className="touch-target w-full py-3.5 px-4 rounded-xl border border-dashed border-stone-700 hover:border-amber-400/60 bg-stone-900/60 text-stone-300 font-mono text-xs flex items-center justify-center space-x-2 transition-all active:scale-95"
+              onClick={() => {
+                playTactileTick();
+                fileInputRef.current?.click();
+              }}
+              className="touch-target w-full py-3.5 px-4 rounded-xl border border-dashed border-stone-700 hover:border-amber-400/60 bg-stone-900/60 text-stone-300 font-mono text-xs flex items-center justify-center space-x-2 tactile-btn"
             >
               <Camera className="w-4 h-4 text-amber-400" />
               <span>{isCompressing ? 'COMPRESSING ON-DEVICE...' : 'CAPTURE SET PHOTO'}</span>
@@ -247,17 +257,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         </div>
 
         {/* Due at Chair Total Callout */}
-        <div className="p-4 rounded-xl bg-gradient-to-r from-stone-900 to-stone-950 border border-stone-700 flex items-center justify-between">
+        <div className="p-4 rounded-xl hairline-card border border-stone-700 flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 block">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 block font-semibold">
               Balance Due Now
             </span>
-            <span className="text-2xl font-mono font-extrabold text-stone-100">
+            <span className="text-2xl font-mono tabular-nums font-extrabold text-stone-100">
               ${balanceDue}
             </span>
           </div>
 
-          <div className="text-right text-[11px] font-mono text-stone-400">
+          <div className="text-right text-[11px] font-mono tabular-nums text-stone-400">
             <div>Billed: ${finalBilled}</div>
             <div>Tip: +${tipAmount}</div>
           </div>
@@ -269,7 +279,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             type="button"
             disabled={isProcessing}
             onClick={handleCompleteService}
-            className="touch-target w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-mono text-sm font-bold flex items-center justify-center space-x-2 shadow-lg shadow-emerald-950/50 active:scale-95 transition-all"
+            className="touch-target w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-mono text-sm font-bold flex items-center justify-center space-x-2 shadow-lg shadow-emerald-950/50 tactile-btn"
           >
             <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
             <span>COMPLETE &amp; ARCHIVE TO LOG</span>
