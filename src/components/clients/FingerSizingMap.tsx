@@ -1,5 +1,5 @@
-import React from 'react';
-import { Minus, Plus, Sparkles, Check, Copy } from 'lucide-react';
+import React, { useState } from 'react';
+import { Minus, Plus, Check, Copy } from 'lucide-react';
 import type { SizingProfile, FingerName, SizingHand, SizingSystem } from '../../types';
 import { db } from '../../db/schema';
 
@@ -10,12 +10,12 @@ interface FingerSizingMapProps {
   onUpdate?: (updated: SizingProfile) => void;
 }
 
-const FINGER_LABELS: { key: FingerName; label: string; short: string }[] = [
-  { key: 'thumb', label: 'Thumb', short: 'TH' },
-  { key: 'index', label: 'Index', short: 'IN' },
-  { key: 'middle', label: 'Middle', short: 'MID' },
-  { key: 'ring', label: 'Ring', short: 'RG' },
-  { key: 'pinky', label: 'Pinky', short: 'PK' },
+const FINGERS: { key: FingerName; short: string; label: string }[] = [
+  { key: 'thumb', short: 'TH', label: 'Thumb' },
+  { key: 'index', short: 'IN', label: 'Index' },
+  { key: 'middle', short: 'MID', label: 'Middle' },
+  { key: 'ring', short: 'RG', label: 'Ring' },
+  { key: 'pinky', short: 'PK', label: 'Pinky' },
 ];
 
 const SIZING_SYSTEMS: SizingSystem[] = ['Gel-X', 'Paper-Forms', 'Press-On', 'Custom'];
@@ -26,7 +26,7 @@ export const FingerSizingMap: React.FC<FingerSizingMapProps> = ({
   readOnly = false,
   onUpdate,
 }) => {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
 
   const updateFingerSize = async (
     hand: 'leftHand' | 'rightHand',
@@ -35,7 +35,6 @@ export const FingerSizingMap: React.FC<FingerSizingMapProps> = ({
   ) => {
     if (readOnly) return;
     const currentVal = sizing[hand][finger] ?? 4;
-    // Gel-X sizes typically 00 (-1) to 9
     const newVal = Math.max(-1, Math.min(9, currentVal + delta));
 
     const updatedProfile: SizingProfile = {
@@ -46,10 +45,7 @@ export const FingerSizingMap: React.FC<FingerSizingMapProps> = ({
       },
     };
 
-    if (onUpdate) {
-      onUpdate(updatedProfile);
-    }
-
+    if (onUpdate) onUpdate(updatedProfile);
     try {
       await db.clients.update(clientId, { sizing: updatedProfile });
     } catch (err) {
@@ -59,10 +55,7 @@ export const FingerSizingMap: React.FC<FingerSizingMapProps> = ({
 
   const handleSystemChange = async (system: SizingSystem) => {
     if (readOnly) return;
-    const updatedProfile: SizingProfile = {
-      ...sizing,
-      system,
-    };
+    const updatedProfile: SizingProfile = { ...sizing, system };
     if (onUpdate) onUpdate(updatedProfile);
     try {
       await db.clients.update(clientId, { sizing: updatedProfile });
@@ -85,167 +78,98 @@ export const FingerSizingMap: React.FC<FingerSizingMapProps> = ({
     return val.toString();
   };
 
-  return (
-    <div className="w-full bg-studio-surface border border-studio-elevated rounded-2xl p-4 md:p-6 space-y-5 select-none shadow-md">
-      {/* Header with System Selector & Quick Copy */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-studio-elevated">
-        <div className="flex items-center space-x-2">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <h3 className="text-sm font-semibold font-mono tracking-wider text-stone-200 uppercase">
-            10-Finger Sizing Vault
-          </h3>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {/* System Selection Chips */}
-          <div className="flex items-center bg-stone-950 p-1 rounded-xl border border-stone-800">
-            {SIZING_SYSTEMS.map((sys) => (
-              <button
-                key={sys}
-                type="button"
-                disabled={readOnly}
-                onClick={() => handleSystemChange(sys)}
-                className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all ${
-                  sizing.system === sys
-                    ? 'bg-stone-800 text-stone-100 font-semibold shadow-sm'
-                    : 'text-stone-500 hover:text-stone-300'
-                }`}
-              >
-                {sys}
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={copySizingSummary}
-            className="touch-target p-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-stone-200 border border-stone-800 transition-colors"
-            title="Copy Sizing Summary"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-          </button>
-        </div>
+  const renderHand = (handKey: 'leftHand' | 'rightHand', title: string) => (
+    <div className="bg-stone-950/60 rounded-2xl p-4 border border-stone-800/60 space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-xs uppercase tracking-wider text-stone-400 font-semibold">
+          {title}
+        </span>
+        <span className="text-[10px] font-mono text-stone-500">Thumb → Pinky</span>
       </div>
 
-      {/* Sizing Grids: Left Hand & Right Hand */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left Hand Grid */}
-        <div className="bg-stone-950/80 rounded-2xl p-4 border border-stone-800/80 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-stone-800">
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-stone-400">
-              Left Hand
-            </span>
-            <span className="text-[11px] font-mono text-stone-500">
-              Thumb → Pinky
-            </span>
-          </div>
+      <div className="grid grid-cols-5 gap-2">
+        {FINGERS.map(({ key, short, label }) => {
+          const value = sizing[handKey][key] ?? 4;
+          return (
+            <div
+              key={`${handKey}-${key}`}
+              className="flex flex-col items-center bg-stone-900/80 rounded-xl p-2 border border-stone-800/60"
+            >
+              <span className="text-[10px] font-mono text-stone-500 font-bold mb-1">
+                {short}
+              </span>
 
-          <div className="space-y-2">
-            {FINGER_LABELS.map(({ key, label, short }) => {
-              const value = sizing.leftHand[key] ?? 4;
-              return (
-                <div
-                  key={`left-${key}`}
-                  className="flex items-center justify-between bg-stone-900/90 rounded-xl px-3 py-2 border border-stone-800/60"
+              {/* Number display */}
+              <div className="font-mono text-2xl font-light text-amber-300 py-1">
+                {formatDisplaySize(value)}
+              </div>
+
+              {/* Stepper buttons (Glove-friendly) */}
+              <div className="flex items-center space-x-1 mt-1 w-full justify-center">
+                <button
+                  type="button"
+                  disabled={readOnly || value <= -1}
+                  onClick={() => updateFingerSize(handKey, key, -1)}
+                  className="touch-target w-9 h-9 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 disabled:opacity-20 flex items-center justify-center transition-colors active:scale-95"
+                  aria-label={`Decrease ${label}`}
                 >
-                  <div className="flex items-center space-x-2">
-                    <span className="w-7 h-7 rounded-lg bg-stone-800 font-mono text-xs font-bold text-stone-400 flex items-center justify-center">
-                      {short}
-                    </span>
-                    <span className="text-sm font-medium text-stone-200">{label}</span>
-                  </div>
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
 
-                  <div className="flex items-center space-x-2">
-                    {/* Oversized Stepper - (Min 44x44 / 48x48) */}
-                    <button
-                      type="button"
-                      disabled={readOnly || value <= -1}
-                      onClick={() => updateFingerSize('leftHand', key, -1)}
-                      className="touch-target w-11 h-11 rounded-xl bg-stone-800 hover:bg-stone-700 active:bg-stone-600 text-stone-200 disabled:opacity-30 disabled:pointer-events-none transition-all active:scale-95 border border-stone-700"
-                      aria-label={`Decrease ${label} Left Hand`}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
+                <button
+                  type="button"
+                  disabled={readOnly || value >= 9}
+                  onClick={() => updateFingerSize(handKey, key, 1)}
+                  className="touch-target w-9 h-9 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 disabled:opacity-20 flex items-center justify-center transition-colors active:scale-95"
+                  aria-label={`Increase ${label}`}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
-                    <div className="w-12 h-11 rounded-xl bg-stone-950 font-mono text-xl font-extrabold text-amber-300 flex items-center justify-center border border-stone-800 shadow-inner">
-                      {formatDisplaySize(value)}
-                    </div>
-
-                    {/* Oversized Stepper + (Min 44x44 / 48x48) */}
-                    <button
-                      type="button"
-                      disabled={readOnly || value >= 9}
-                      onClick={() => updateFingerSize('leftHand', key, 1)}
-                      className="touch-target w-11 h-11 rounded-xl bg-stone-800 hover:bg-stone-700 active:bg-stone-600 text-stone-200 disabled:opacity-30 disabled:pointer-events-none transition-all active:scale-95 border border-stone-700"
-                      aria-label={`Increase ${label} Left Hand`}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+  return (
+    <div className="w-full bg-studio-surface border border-stone-800/80 rounded-2xl p-5 space-y-4 select-none">
+      {/* Header with System Selector & Copy */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-stone-800/60">
+        <div className="flex items-center space-x-2">
+          {SIZING_SYSTEMS.map((sys) => (
+            <button
+              key={sys}
+              type="button"
+              disabled={readOnly}
+              onClick={() => handleSystemChange(sys)}
+              className={`px-3 py-1.5 text-xs font-mono rounded-lg transition-colors ${
+                sizing.system === sys
+                  ? 'bg-stone-800 text-stone-100 font-semibold'
+                  : 'text-stone-500 hover:text-stone-300'
+              }`}
+            >
+              {sys}
+            </button>
+          ))}
         </div>
 
-        {/* Right Hand Grid */}
-        <div className="bg-stone-950/80 rounded-2xl p-4 border border-stone-800/80 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-stone-800">
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-stone-400">
-              Right Hand
-            </span>
-            <span className="text-[11px] font-mono text-stone-500">
-              Thumb → Pinky
-            </span>
-          </div>
+        <button
+          type="button"
+          onClick={copySizingSummary}
+          className="touch-target px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-stone-200 border border-stone-800 text-xs font-mono flex items-center space-x-1.5 transition-colors"
+          title="Copy Sizes"
+        >
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          <span>{copied ? 'Copied' : 'Copy'}</span>
+        </button>
+      </div>
 
-          <div className="space-y-2">
-            {FINGER_LABELS.map(({ key, label, short }) => {
-              const value = sizing.rightHand[key] ?? 4;
-              return (
-                <div
-                  key={`right-${key}`}
-                  className="flex items-center justify-between bg-stone-900/90 rounded-xl px-3 py-2 border border-stone-800/60"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span className="w-7 h-7 rounded-lg bg-stone-800 font-mono text-xs font-bold text-stone-400 flex items-center justify-center">
-                      {short}
-                    </span>
-                    <span className="text-sm font-medium text-stone-200">{label}</span>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    {/* Oversized Stepper - */}
-                    <button
-                      type="button"
-                      disabled={readOnly || value <= -1}
-                      onClick={() => updateFingerSize('rightHand', key, -1)}
-                      className="touch-target w-11 h-11 rounded-xl bg-stone-800 hover:bg-stone-700 active:bg-stone-600 text-stone-200 disabled:opacity-30 disabled:pointer-events-none transition-all active:scale-95 border border-stone-700"
-                      aria-label={`Decrease ${label} Right Hand`}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-
-                    <div className="w-12 h-11 rounded-xl bg-stone-950 font-mono text-xl font-extrabold text-amber-300 flex items-center justify-center border border-stone-800 shadow-inner">
-                      {formatDisplaySize(value)}
-                    </div>
-
-                    {/* Oversized Stepper + */}
-                    <button
-                      type="button"
-                      disabled={readOnly || value >= 9}
-                      onClick={() => updateFingerSize('rightHand', key, 1)}
-                      className="touch-target w-11 h-11 rounded-xl bg-stone-800 hover:bg-stone-700 active:bg-stone-600 text-stone-200 disabled:opacity-30 disabled:pointer-events-none transition-all active:scale-95 border border-stone-700"
-                      aria-label={`Increase ${label} Right Hand`}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      {/* Hand Grids */}
+      <div className="space-y-4">
+        {renderHand('leftHand', 'Left Hand')}
+        {renderHand('rightHand', 'Right Hand')}
       </div>
     </div>
   );

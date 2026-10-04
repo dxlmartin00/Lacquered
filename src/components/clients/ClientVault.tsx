@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Users,
   Search,
   UserPlus,
   ShieldAlert,
@@ -45,49 +44,45 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-5 pb-20 md:pb-6 select-none">
-      {/* Vault Header & Search */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-studio-surface border border-studio-elevated rounded-3xl p-5 md:p-6 shadow-md">
+    <div className="w-full max-w-4xl mx-auto space-y-4 pb-20 md:pb-6 select-none">
+      {/* Header & New Client */}
+      <div className="flex items-center justify-between pb-2 border-b border-stone-800/60">
         <div>
-          <div className="flex items-center space-x-2.5">
-            <Users className="w-5 h-5 text-amber-400" />
-            <h2 className="text-xl font-display font-bold uppercase tracking-wider text-stone-100">
-              Client &amp; Sizing Vault
-            </h2>
-          </div>
-          <p className="text-xs text-stone-400 mt-1">
-            Offline IndexedDB client roster with verified 10-finger tip profiles
-          </p>
+          <h2 className="text-lg font-display font-bold uppercase tracking-wider text-stone-100">
+            Client Vault
+          </h2>
+          <span className="text-xs font-mono text-stone-400">
+            {clients.length} registered clients
+          </span>
         </div>
 
         <button
           type="button"
           onClick={() => setIsNewClientOpen(true)}
-          className="touch-target px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-2 shadow-lg active:scale-95 transition-all"
+          className="touch-target px-3.5 py-1.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-mono text-xs font-bold flex items-center space-x-1.5 transition-colors active:scale-95"
         >
-          <UserPlus className="w-4 h-4" />
-          <span>NEW CLIENT PROFILE</span>
+          <UserPlus className="w-3.5 h-3.5" />
+          <span>New Client</span>
         </button>
       </div>
 
-      {/* Search Input Bar */}
+      {/* Search Input */}
       <div className="relative">
-        <Search className="w-4 h-4 text-stone-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <Search className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name, phone, instagram, or shape..."
-          className="w-full bg-studio-surface border border-studio-elevated rounded-2xl pl-11 pr-4 py-3 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-stone-600 shadow-sm"
+          placeholder="Search by client name, shape, phone..."
+          className="w-full bg-studio-surface border border-stone-800 rounded-xl pl-10 pr-4 py-2.5 text-xs font-mono text-stone-100 placeholder-stone-500 focus:outline-none focus:border-stone-600"
         />
       </div>
 
-      {/* Client Cards Roster */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Client List */}
+      <div className="space-y-2">
         {filteredClients.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-stone-500 font-mono text-xs space-y-2">
-            <Users className="w-8 h-8 text-stone-700 mx-auto" />
-            <p>No clients found matching "{searchQuery}"</p>
+          <div className="text-center py-10 text-stone-500 font-mono text-xs">
+            No clients match "{searchQuery}"
           </div>
         ) : (
           filteredClients.map((client) => {
@@ -96,54 +91,36 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
               <div
                 key={client.id}
                 onClick={() => handleOpenClient(client.id)}
-                className="bg-studio-surface border border-studio-elevated hover:border-stone-700 p-5 rounded-2xl space-y-4 cursor-pointer transition-all active:scale-[0.99] shadow-sm flex flex-col justify-between"
+                className="bg-studio-surface border border-stone-800/80 hover:border-stone-700 p-4 rounded-xl cursor-pointer transition-colors flex items-center justify-between gap-3"
               >
-                {/* Header: Name & Allergy Flag */}
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-base text-stone-100">{client.name}</h3>
-                      {client.instagram && (
-                        <span className="text-xs text-stone-500 font-mono">{client.instagram}</span>
-                      )}
-                    </div>
-                    <div className="text-xs text-stone-400 font-mono mt-0.5">{client.phone}</div>
-                  </div>
-
-                  {hasAllergy && (
-                    <span className="text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded bg-rose-950 border border-rose-800 text-rose-300 flex items-center space-x-1 shrink-0">
-                      <ShieldAlert className="w-3 h-3 text-rose-400" />
-                      <span>HEMA / ACRYLATE</span>
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold text-sm text-stone-100 truncate">
+                      {client.name}
                     </span>
-                  )}
-                </div>
-
-                {/* Sizing Readout Preview */}
-                <div className="bg-stone-950 p-3 rounded-xl border border-stone-800 space-y-1.5 font-mono text-xs">
-                  <div className="flex items-center justify-between text-[11px] text-stone-400">
-                    <span className="text-amber-400 font-semibold">{client.sizing.system} Sizes</span>
-                    <span className="text-stone-500">{client.preferredShape} · {client.preferredLength}</span>
+                    {client.instagram && (
+                      <span className="text-xs text-stone-500 font-mono hidden sm:inline">
+                        {client.instagram}
+                      </span>
+                    )}
+                    {hasAllergy && (
+                      <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 flex items-center space-x-1">
+                        <ShieldAlert className="w-2.5 h-2.5" />
+                        <span>HEMA</span>
+                      </span>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="text-stone-300">
-                      <span className="text-stone-500">L: </span>
-                      {formatHandSizes(client.sizing.leftHand)}
-                    </div>
-                    <div className="text-stone-300">
-                      <span className="text-stone-500">R: </span>
-                      {formatHandSizes(client.sizing.rightHand)}
-                    </div>
+                  <div className="text-[11px] font-mono text-stone-400 truncate">
+                    <span>{client.preferredShape} · {client.preferredLength}</span>
+                    <span className="text-stone-600 mx-2">•</span>
+                    <span className="text-stone-400">L: {formatHandSizes(client.sizing.leftHand)}</span>
+                    <span className="text-stone-600 mx-1">|</span>
+                    <span className="text-stone-400">R: {formatHandSizes(client.sizing.rightHand)}</span>
                   </div>
                 </div>
 
-                {/* Footer Action Chips */}
-                <div className="flex items-center justify-between pt-1 border-t border-stone-900">
-                  <span className="text-xs font-mono text-amber-400 flex items-center space-x-1 hover:text-amber-300">
-                    <span>Inspect 10-Finger Map</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </span>
-
+                <div className="flex items-center space-x-2 shrink-0">
                   {onSeatInChair && (
                     <button
                       type="button"
@@ -157,6 +134,8 @@ export const ClientVault: React.FC<ClientVaultProps> = ({ clients, onSeatInChair
                       <span>Seat</span>
                     </button>
                   )}
+
+                  <ChevronRight className="w-4 h-4 text-stone-500" />
                 </div>
               </div>
             );

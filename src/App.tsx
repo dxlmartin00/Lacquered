@@ -100,8 +100,6 @@ export function App() {
       activeTab={activeTab}
       onTabChange={setActiveTab}
       inChairCount={inChairAppointments.length}
-      onOpenQuickQuote={() => setActiveModal('quote')}
-      onOpenNewClient={() => setActiveModal('new-client')}
     >
       {/* TAB 1: THE DESK (Active Chair Session & Daily Timeline) */}
       {activeTab === 'desk' && (

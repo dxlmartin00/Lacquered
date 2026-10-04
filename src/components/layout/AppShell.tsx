@@ -9,8 +9,6 @@ interface AppShellProps {
   activeTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   inChairCount?: number;
-  onOpenQuickQuote?: () => void;
-  onOpenNewClient?: () => void;
 }
 
 export const AppShell: React.FC<AppShellProps> = ({
@@ -18,8 +16,6 @@ export const AppShell: React.FC<AppShellProps> = ({
   activeTab,
   onTabChange,
   inChairCount = 0,
-  onOpenQuickQuote,
-  onOpenNewClient,
 }) => {
   const { timer, pauseTimer, resumeTimer, resetTimer } = useSessionStore();
 
@@ -28,18 +24,15 @@ export const AppShell: React.FC<AppShellProps> = ({
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-studio-base text-studio-text select-none">
       {/* Top Application Header */}
-      <Header
-        onOpenQuickQuote={onOpenQuickQuote}
-        onOpenNewClient={onOpenNewClient}
-      />
+      <Header />
 
-      {/* Global Mini Timer Banner when navigating on non-desk tabs and timer is running */}
+      {/* Sleek Mini Timer Bar when navigating on non-desk tabs and timer is active */}
       {isTimerRunningOrActive && activeTab !== 'desk' && (
-        <div className="w-full bg-amber-950/90 border-b border-amber-600/70 px-4 py-2 flex items-center justify-between text-xs font-mono text-amber-200 z-30 shrink-0">
+        <div className="w-full bg-stone-900 border-b border-stone-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-stone-200 z-30 shrink-0">
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            <span className="font-bold">{timer.label}:</span>
-            <span className="text-base font-extrabold text-stone-100">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span className="text-stone-400">{timer.label}:</span>
+            <span className="font-bold text-stone-100">
               {Math.floor(timer.remainingSeconds / 60)}:
               {timer.remainingSeconds % 60 < 10 ? '0' : ''}
               {timer.remainingSeconds % 60}
@@ -49,21 +42,21 @@ export const AppShell: React.FC<AppShellProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={timer.isRunning ? pauseTimer : resumeTimer}
-              className="touch-target px-3 py-1 rounded-lg bg-amber-900 border border-amber-700 text-amber-100 font-bold"
+              className="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-stone-200"
             >
-              {timer.isRunning ? 'PAUSE' : 'RESUME'}
+              {timer.isRunning ? 'Pause' : 'Resume'}
             </button>
             <button
               onClick={resetTimer}
-              className="touch-target p-1.5 rounded-lg bg-amber-900 border border-amber-700 text-amber-300"
+              className="p-1 rounded text-stone-500 hover:text-stone-300"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => onTabChange('desk')}
-              className="touch-target px-3 py-1 rounded-lg bg-amber-400 text-stone-950 font-bold"
+              className="px-2.5 py-1 rounded bg-stone-100 text-stone-950 font-bold"
             >
-              CHAIR →
+              Chair →
             </button>
           </div>
         </div>
@@ -71,15 +64,13 @@ export const AppShell: React.FC<AppShellProps> = ({
 
       {/* Middle Workspace Layout: Left Rail on desktop + Scrollable Main Content */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Navigation Rail */}
         <Navigation
           activeTab={activeTab}
           onTabChange={onTabChange}
           inChairCount={inChairCount}
         />
 
-        {/* Scrollable Workspace Container */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 md:p-8 overscroll-contain">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 overscroll-contain">
           {children}
         </main>
       </div>
