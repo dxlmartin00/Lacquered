@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+  }
+
+  html, body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-touch-callout: none;
+    user-select: none;
+    touch-action: manipulation;
+    background-color: #0c0a09;
+    color: #f5f5f4;
+    min-height: 100dvh;
+    height: 100dvh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  /* Prevent iOS Safari from zooming inputs on focus */
+  input, textarea, select {
+    font-size: 16px !important;
+    user-select: auto;
+  }
+
+  /* Custom high-contrast scrollbars for studio darkroom */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0c0a09;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #292524;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #44403c;
+  }
+}
+
+@layer utilities {
+  .safe-pt {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+  .safe-pb {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .safe-pl {
+    padding-left: max(12px, env(safe-area-inset-left));
+  }
+  .safe-pr {
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+  
+  /* Glove touch target assurance */
+  .touch-target {
+    min-width: 48px;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
