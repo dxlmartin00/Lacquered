@@ -96,7 +96,31 @@ npm run preview
 
 ---
 
+## Deployment (Cloudflare Pages)
+
+Laquered is pre-configured for free global deployment on **Cloudflare Pages** with SPA routing (`_redirects`) and edge security headers (`_headers`).
+
+### Option A: Automatic Git Deployment (Recommended)
+1. Log in to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. Navigate to **Workers & Pages** > **Pages** > **Connect to Git**.
+3. Select your repository: `dxlmartin00/Lacquered`.
+4. Configure Build Settings:
+   * **Framework preset:** `Vite`
+   * **Build command:** `npm run build`
+   * **Build output directory:** `dist`
+5. Click **Save and Deploy**. Every subsequent push to `main` will automatically trigger an edge deployment.
+
+### Option B: Direct CLI Deployment via Wrangler
+Deploy directly from your machine:
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name laquered
+```
+
+---
+
 ## License
 
 Private and proprietary. All rights reserved.
+
 

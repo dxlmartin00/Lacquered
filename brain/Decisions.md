@@ -46,6 +46,13 @@ Key architecture and product choices made, with the context so they stay made:
   - Added `EditCustomerModal` to update name, phone, Instagram handle, preferred nail shape & length, HEMA sensitivity flag, and studio notes directly in IndexedDB.
   - Added `DeleteCustomerModal` with confirmation dialog and cascade cleanup of orphaned appointments.
   - Purged historical dev prototype IDs (`client-maya-lin`, `client-elena-rostova`, `client-chloe-vance`) from local Dexie database migration routine.
+## 8. Cloudflare Pages Free Edge Deployment
+- **Context:** User requested deployment of Laquered on a free hosting platform. Selected Cloudflare Pages for its zero-cost edge network, unlimited bandwidth, and continuous deployment from GitHub.
+- **Decision:**
+  - Added `public/_redirects` (`/*  /index.html  200`) for single-page app (SPA) client-side routing fallback without 404s.
+  - Added `public/_headers` for edge-level security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) and asset caching policies (immutable cache for `/assets/*`, zero cache revalidation for `/sw.js` and `/manifest.webmanifest`).
+  - Pre-configured build command `npm run build` and output directory `dist` for direct GitHub integration.
 - **Date:** October 2026
+
 
 
