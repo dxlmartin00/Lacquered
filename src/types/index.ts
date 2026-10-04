@@ -20,6 +20,25 @@ export interface ClientAllergies {
 export type NailShape = 'Square' | 'Squoval' | 'Almond' | 'Coffin' | 'Stiletto' | 'Duck';
 export type NailLength = 'Natural' | 'Short' | 'Medium' | 'Long' | 'XL';
 
+export type ServiceCategory = 'soft_gel' | 'hard_gel' | 'add_on';
+
+export interface ServiceItem {
+  id: string;
+  category: ServiceCategory;
+  categoryLabel: string;
+  name: string;
+  price: number;
+  perNail?: boolean;
+}
+
+export interface SelectedServiceItem {
+  serviceId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  perNail?: boolean;
+}
+
 export interface ClientRecord {
   id: string;
   name: string;
@@ -39,6 +58,7 @@ export interface AppointmentRecord {
   id: string;
   clientId: string;
   clientName: string;
+  clientPhone?: string;
   scheduledTime: number; // Unix ms
   status: AppointmentStatus;
   baseService: string;
@@ -47,6 +67,9 @@ export interface AppointmentRecord {
   durationMinutes: number;
   depositPaid: number;
   notes?: string;
+  selectedServices?: SelectedServiceItem[];
+  totalPrice?: number;
+  createdAt?: number;
 }
 
 export interface ServiceFormula {
@@ -68,6 +91,8 @@ export interface ServiceLogRecord {
   resultPhotoBlob?: Blob;
   finalBilled: number;
   tip: number;
+  selectedServices?: SelectedServiceItem[];
+  notes?: string;
 }
 
 export interface ArtTierDefinition {
@@ -84,6 +109,6 @@ export interface BaseServiceOption {
   name: string;
   price: number;
   duration: number;
-  category: 'natural' | 'overlay' | 'extensions';
+  category: 'natural' | 'overlay' | 'extensions' | string;
   description: string;
 }

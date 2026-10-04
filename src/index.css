@@ -26,27 +26,27 @@
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
     -webkit-touch-callout: none;
-    background-color: #0c0a09;
-    color: #f5f5f4;
+    background-color: #fff5f7;
+    color: #2b1c28;
     min-height: 100dvh;
     height: 100dvh;
     width: 100vw;
     overflow: hidden;
-    caret-color: #f59e0b;
+    caret-color: #ff4d79;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   ::selection {
-    background-color: rgba(217, 119, 6, 0.28);
-    color: #fef3c7;
+    background-color: #ffd1dc;
+    color: #9d174d;
   }
 
-  /* Prevent iOS Safari from zooming inputs on focus (Emil rule) */
+  /* Prevent iOS Safari from zooming inputs on focus */
   input, textarea, select {
     font-size: 16px !important;
     touch-action: manipulation;
   }
 
-  /* Controls never have long-press text selection (Emil mobile-native rule) */
   button, [role="button"], .touch-control {
     touch-action: manipulation;
     user-select: none;
@@ -54,7 +54,7 @@
     -webkit-touch-callout: none;
   }
 
-  /* Custom high-grade darkroom scrollbars */
+  /* Clean gentle pastel scrollbars */
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -65,17 +65,16 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #292524;
+    background: #f8ccd5;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #44403c;
+    background: #f43f5e;
   }
 }
 
 @layer utilities {
-  /* Safe area insets */
   .safe-pt {
     padding-top: max(12px, env(safe-area-inset-top));
   }
@@ -89,7 +88,6 @@
     padding-right: max(12px, env(safe-area-inset-right));
   }
 
-  /* Glove touch target assurance (Min 48px target) */
   .touch-target {
     min-width: 48px;
     min-height: 48px;
@@ -98,29 +96,25 @@
     justify-content: center;
   }
 
-  /* Tabular numbers to prevent layout shifts during timer countdown */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Liquid glass physical refraction (Taste Skill & Impeccable) */
-  .liquid-glass {
-    background: rgba(23, 21, 19, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  /* Image 1 Soft Card Style */
+  .pastel-card {
+    background: #ffffff;
+    border: 1px solid #fce4ec;
+    box-shadow: 0 4px 20px -2px rgba(255, 77, 121, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
   }
 
-  .hairline-card {
-    background: #141210;
-    border: 1px solid rgba(68, 64, 60, 0.4);
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  /* Image 1 Hero Pink Gradient Card */
+  .pink-hero-card {
+    background: linear-gradient(135deg, #ff7a9e 0%, #ff527f 100%);
+    box-shadow: 0 10px 25px -4px rgba(255, 77, 121, 0.35);
   }
 
-  /* Tactile press feedback (Emil Kowalski principle) */
   .tactile-btn {
-    transition: transform 120ms var(--ease-out), background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+    transition: transform 120ms var(--ease-out), background-color 150ms ease, opacity 150ms ease, box-shadow 150ms ease;
   }
   .tactile-btn:active {
     transform: scale(0.97);
@@ -133,7 +127,6 @@
     transform: scale(0.95);
   }
 
-  /* Modal entry starting from scale(0.96) - never scale(0) */
   .modal-spring-enter {
     animation: modalSpring 240ms var(--ease-spring) forwards;
   }
