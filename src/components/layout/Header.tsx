@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Bell, WifiOff, Sun, SunMedium } from 'lucide-react';
+import { Bell, WifiOff, Sun, SunMedium } from 'lucide-react';
+import { LaqueredLogo } from '../common/LaqueredLogo';
 import { useWakeLock } from '../../hooks/useWakeLock';
 import { playTactileTick } from '../../utils/audio';
 
@@ -33,9 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
       <div className="flex items-center justify-between max-w-xl mx-auto">
         {/* Studio Branding */}
         <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-xs">
-            <Sparkles className="w-4 h-4 stroke-[2.2]" />
-          </div>
+          <LaqueredLogo className="w-8 h-8 rounded-xl shadow-xs shrink-0" />
           <div>
             <div className="flex items-center space-x-1.5">
               <span className="font-display font-extrabold text-sm sm:text-base tracking-tight text-slate-800">

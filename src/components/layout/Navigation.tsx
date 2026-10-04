@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Sparkles, Plus, TrendingUp, Users } from 'lucide-react';
+import { LaqueredLogo } from '../common/LaqueredLogo';
 import { playTactileTick } from '../../utils/audio';
 
 export type NavTab = 'home' | 'services' | 'history' | 'customers';
@@ -34,9 +35,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         <div className="space-y-2">
           {/* Logo / Studio Header */}
           <div className="px-2 py-3 mb-2 flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-pink-400 to-pink-500 text-white flex items-center justify-center shadow-md shadow-pink-200">
-              <Sparkles className="w-5 h-5 stroke-[2.2]" />
-            </div>
+            <LaqueredLogo className="w-9 h-9 rounded-2xl shadow-md shadow-pink-200 shrink-0" />
             <div>
               <span className="font-display font-extrabold text-base tracking-tight text-slate-800 block">
                 Laquered

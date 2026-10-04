@@ -9,6 +9,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import type { AppointmentRecord, ClientRecord } from '../../types';
+import { LaqueredLogo } from '../common/LaqueredLogo';
 import { playTactileTick, playChimeSuccess } from '../../utils/audio';
 
 interface HomeScreenProps {
@@ -51,10 +52,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </h1>
         </div>
 
-        {/* Studio Badge / Mini Avatar with single-family Lucide icon */}
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-400 to-pink-500 text-white flex items-center justify-center shadow-md shadow-pink-200">
-          <Sparkles className="w-6 h-6 stroke-[2.2]" />
-        </div>
+        {/* Studio Logo Badge */}
+        <LaqueredLogo className="w-12 h-12 rounded-2xl shadow-md shadow-pink-200 shrink-0" />
       </div>
 
       {/* Hero Pink Gradient Card (Matching Image 1: "Today's Skin Mood" pink card) */}
