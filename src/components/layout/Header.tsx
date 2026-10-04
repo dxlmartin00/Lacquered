@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, WifiOff, Sun, SunMedium } from 'lucide-react';
+import { Sparkles, Bell, WifiOff, Sun, SunMedium } from 'lucide-react';
 import { useWakeLock } from '../../hooks/useWakeLock';
 import { playTactileTick } from '../../utils/audio';
 
@@ -31,18 +31,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
   return (
     <header className="w-full bg-white/80 backdrop-blur-md border-b border-pink-100/80 select-none shrink-0 safe-pt px-4 py-2.5 z-30">
       <div className="flex items-center justify-between max-w-xl mx-auto">
-        {/* Studio Branding matching Image 1 & 2 */}
+        {/* Studio Branding */}
         <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center font-bold text-sm shadow-xs">
-            🌸
+          <div className="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-xs">
+            <Sparkles className="w-4 h-4 stroke-[2.2]" />
           </div>
           <div>
             <div className="flex items-center space-x-1.5">
               <span className="font-display font-extrabold text-sm sm:text-base tracking-tight text-slate-800">
-                Pretty Tips
+                Laquered
               </span>
-              <span className="text-[10px] font-bold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded-full">
-                by Nyx
+              <span className="text-[10px] font-bold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                Studio OS
               </span>
             </div>
           </div>

@@ -23,3 +23,8 @@ Key architecture and product choices made, with the context so they stay made:
 - **Context:** Prevent accidental deletion of services while enabling fast touch management.
 - **Decision:** Touch horizontal swipe gestures reveal a delete button; tapping triggers a dedicated confirmation modal before executing `db.services.delete(id)`.
 - **Date:** October 2026
+
+## 5. Renaming to Laquered and Single-Family Iconography
+- **Context:** User requested app name change to "Laquered" and strict ban on emojis.
+- **Decision:** Standardized name to "Laquered" across metadata, headers, and UI. Replaced all emoji badges with unified `lucide-react` icons (e.g. `Sparkles` for logo/styling, `Armchair` for chair sessions, `Clock` for timers, `CheckCircle2` for completions).
+- **Date:** October 2026

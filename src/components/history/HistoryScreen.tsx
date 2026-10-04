@@ -29,14 +29,14 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ appointments }) =>
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-4 pb-28 pt-2 px-1 select-none">
-      {/* Title Header matching Image 1: "My Progress / Let's see your glow up! ✨" */}
+      {/* Title Header matching Image 1: "My Progress" */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-2xl font-bold text-slate-800">
             Studio Progress
           </h2>
           <p className="text-xs text-slate-400">
-            Let's see your studio glow! ✨
+            Track your studio performance and completed sets
           </p>
         </div>
 

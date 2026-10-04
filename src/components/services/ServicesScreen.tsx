@@ -54,7 +54,7 @@ export const ServicesScreen: React.FC = () => {
       <div className="text-center space-y-1 py-1">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-pink-100/70 text-pink-600 text-xs font-semibold">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Pretty Tips Studio Menu</span>
+          <span>Laquered Studio Menu</span>
         </div>
         <h2 className="font-display text-2xl font-bold text-slate-800">
           Services &amp; Price List

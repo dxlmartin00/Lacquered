@@ -39,22 +39,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-5 pb-28 pt-2 px-1 select-none">
-      {/* Top Greeting Header (Matching Image 1: "Good morning, Millie! / Glow a little today ✨") */}
+      {/* Top Greeting Header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center space-x-1.5 text-xs font-semibold text-pink-500">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Hello, Pretty Tips Studio!</span>
+            <span>Welcome to Laquered</span>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mt-0.5">
-            Ready to Style ✨
+            Ready to Style
           </h1>
-          <p className="text-xs text-slate-400">Making nails pretty, one set at a time</p>
         </div>
 
-        {/* Studio Badge / Mini Avatar */}
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-400 to-pink-500 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-pink-200">
-          💅
+        {/* Studio Badge / Mini Avatar with single-family Lucide icon */}
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-400 to-pink-500 text-white flex items-center justify-center shadow-md shadow-pink-200">
+          <Sparkles className="w-6 h-6 stroke-[2.2]" />
         </div>
       </div>
 
@@ -167,13 +166,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               return (
                 <div
                   key={apt.id}
-                  className={`p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 border transition-colors ${
-                    isInChair
+                  className={`p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 border transition-colors ${isInChair
                       ? 'bg-pink-50/90 border-pink-300 shadow-sm'
                       : isDone
-                      ? 'bg-white/80 border-slate-100 opacity-70'
-                      : 'bg-white border-pink-100 hover:border-pink-200 shadow-xs'
-                  }`}
+                        ? 'bg-white/80 border-slate-100 opacity-70'
+                        : 'bg-white border-pink-100 hover:border-pink-200 shadow-xs'
+                    }`}
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center space-x-2">

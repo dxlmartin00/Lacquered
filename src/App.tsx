@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { Sparkles } from 'lucide-react';
 import { db } from './db/schema';
 import { seedDatabaseIfEmpty } from './db/mockData';
 import { AppShell } from './components/layout/AppShell';
@@ -71,12 +72,12 @@ export function App() {
     return (
       <div className="flex items-center justify-center h-[100dvh] w-screen bg-[#fff5f7] text-slate-800">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-14 h-14 rounded-3xl bg-pink-500 text-white flex items-center justify-center shadow-lg shadow-pink-200 animate-pulse text-2xl font-bold">
-            💅
+          <div className="w-14 h-14 rounded-3xl bg-pink-500 text-white flex items-center justify-center shadow-lg shadow-pink-200 animate-pulse">
+            <Sparkles className="w-7 h-7 stroke-[2.2]" />
           </div>
           <div className="text-center space-y-1">
             <span className="font-display text-lg font-bold text-slate-800 block">
-              Pretty Tips Studio OS
+              Laquered Studio OS
             </span>
             <span className="font-mono text-xs text-pink-500 block">
               Loading offline database...

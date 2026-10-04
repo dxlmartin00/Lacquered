@@ -263,7 +263,7 @@ export const INITIAL_SERVICE_LOGS: ServiceLogRecord[] = [
     timestamp: Date.now() - 86400000 * 3,
     baseService: 'Hard Gel Extensions (Plain) - Short',
     formula: {
-      baseBrand: 'Pretty Tips Studio',
+      baseBrand: 'Laquered Studio',
       shadeCodes: ['Milky Pink #04', 'Cloud White #01'],
       topCoat: 'Glossy',
       details: 'Gentle cuticle care, dual cure LED 60s',

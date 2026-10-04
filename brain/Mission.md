@@ -2,7 +2,7 @@
 
 ## Why this project exists
 
-Lacquered is an offline-first, mobile-ergonomic Progressive Web Application (PWA) built specifically for independent nail artists, booth renters, and private studio technicians. It provides a tactile, zero-friction operating system that handles live chair service, instant service pricing calculation, and customer tracking without requiring internet connectivity or slow multi-screen navigation.
+Laquered is an offline-first, mobile-ergonomic Progressive Web Application (PWA) built specifically for independent nail artists, booth renters, and private studio technicians. It provides a tactile, zero-friction operating system that handles live chair service, instant service pricing calculation, and customer tracking without requiring internet connectivity or slow multi-screen navigation.
 
 ## What winning looks like
 
