@@ -49,10 +49,19 @@ Key architecture and product choices made, with the context so they stay made:
 ## 8. Cloudflare Pages Free Edge Deployment
 - **Context:** User requested deployment of Laquered on a free hosting platform. Selected Cloudflare Pages for its zero-cost edge network, unlimited bandwidth, and continuous deployment from GitHub.
 - **Decision:**
-  - Added `public/_redirects` (`/*  /index.html  200`) for single-page app (SPA) client-side routing fallback without 404s.
-  - Added `public/_headers` for edge-level security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) and asset caching policies (immutable cache for `/assets/*`, zero cache revalidation for `/sw.js` and `/manifest.webmanifest`).
+  - Added `wrangler.json` with SPA not_found_handling and static assets directory pointing to `./dist`.
+  - Added `public/_headers` for edge-level security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) and asset caching policies.
   - Pre-configured build command `npm run build` and output directory `dist` for direct GitHub integration.
 - **Date:** October 2026
+
+## 9. React Portal Modal Mounting & Backdrop-Filter Containing Block Fix
+- **Context:** `BackupRestoreModal` was rendered inside `<header>` which has `backdrop-blur-md`. Under CSS spec, any ancestor with `backdrop-filter` creates a new containing block for `position: fixed` elements, trapping the modal inside the ~50px header box and cutting it off at the top of the screen.
+- **Decision:**
+  - Wrapped `BackupRestoreModal`, `EditCustomerModal`, and `DeleteCustomerModal` in React `createPortal(..., document.body)`.
+  - Added `my-auto` centering, `max-h-[90dvh]`, and `overflow-y-auto` to prevent viewport overflow on mobile devices.
+  - Added backdrop click and `Escape` keyboard shortcuts to dismiss modals cleanly.
+- **Date:** October 2026
+
 
 
 
