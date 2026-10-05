@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Download, Upload, Trash2, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { db } from '../../db/schema';
 import { INITIAL_SERVICES } from '../../db/mockData';
@@ -14,7 +15,18 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({ isOpen, 
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  if (!isOpen) return null;
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || typeof document === 'undefined') return null;
+
 
   // 1. Export database to JSON file
   const handleExportBackup = async () => {
@@ -132,9 +144,17 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({ isOpen, 
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm select-none">
-      <div className="relative w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl border border-pink-100 space-y-4 modal-spring-enter">
+  return createPortal(
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          playTactileTick();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm select-none overflow-y-auto"
+    >
+      <div className="relative w-full max-w-sm my-auto bg-white rounded-3xl p-6 shadow-2xl border border-pink-100 space-y-4 modal-spring-enter max-h-[90dvh] overflow-y-auto">
         <div className="flex items-center justify-between pb-2 border-b border-pink-50">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center">
@@ -149,7 +169,10 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({ isOpen, 
           </div>
 
           <button
-            onClick={onClose}
+            onClick={() => {
+              playTactileTick();
+              onClose();
+            }}
             className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center tactile-btn"
           >
             <X className="w-4 h-4" />
@@ -217,7 +240,10 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({ isOpen, 
           {!isResetConfirmOpen ? (
             <button
               type="button"
-              onClick={() => setIsResetConfirmOpen(true)}
+              onClick={() => {
+                playTactileTick();
+                setIsResetConfirmOpen(true);
+              }}
               className="w-full p-3 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -234,7 +260,10 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({ isOpen, 
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
-                  onClick={() => setIsResetConfirmOpen(false)}
+                  onClick={() => {
+                    playTactileTick();
+                    setIsResetConfirmOpen(false);
+                  }}
                   className="flex-1 py-1.5 rounded-xl bg-white text-slate-600 text-xs font-semibold border border-slate-200"
                 >
                   Cancel
@@ -255,6 +284,8 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({ isOpen, 
           All records are encrypted &amp; stored locally on your device.
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
+
 };

@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Trash2, X } from 'lucide-react';
-
-
 import type { ClientRecord } from '../../types';
 import { db } from '../../db/schema';
 import { playTactileTick, playChimeSuccess } from '../../utils/audio';
@@ -21,7 +20,18 @@ export const DeleteCustomerModal: React.FC<DeleteCustomerModalProps> = ({
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  if (!isOpen || !client) return null;
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !client || typeof document === 'undefined') return null;
+
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -46,9 +56,17 @@ export const DeleteCustomerModal: React.FC<DeleteCustomerModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm select-none">
-      <div className="relative w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-pink-100 modal-spring-enter text-center">
+  return createPortal(
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          playTactileTick();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm select-none overflow-y-auto"
+    >
+      <div className="relative w-full max-w-sm my-auto bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-pink-100 modal-spring-enter text-center max-h-[90dvh] overflow-y-auto">
         {/* Close Button */}
         <button
           type="button"
@@ -100,6 +118,8 @@ export const DeleteCustomerModal: React.FC<DeleteCustomerModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
+

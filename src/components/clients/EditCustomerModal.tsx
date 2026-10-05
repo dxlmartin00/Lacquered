@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, User, Phone, Instagram, Sparkles, ShieldAlert, Check } from 'lucide-react';
 import type { ClientRecord, NailShape, NailLength } from '../../types';
 import { db } from '../../db/schema';
@@ -28,6 +29,17 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
   const [hemaFree, setHemaFree] = useState(false);
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
 
   useEffect(() => {
     if (client) {
@@ -86,9 +98,18 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm select-none">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-pink-100 modal-spring-enter max-h-[90dvh] overflow-y-auto">
+  return createPortal(
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          playTactileTick();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm select-none overflow-y-auto"
+    >
+      <div className="relative w-full max-w-lg my-auto bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-pink-100 modal-spring-enter max-h-[90dvh] overflow-y-auto">
+
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-pink-100">
           <div className="flex items-center space-x-2.5">
@@ -303,6 +324,8 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
+
